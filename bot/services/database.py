@@ -59,6 +59,14 @@ class TranscriptionRecord:
     created_at: str
 
 
+@dataclass(slots=True)
+class UserPlanRecord:
+    id: int
+    username: str | None
+    plan: str
+    created_at: str
+
+
 class DatabaseServiceError(Exception):
     pass
 
@@ -242,6 +250,101 @@ class DatabaseService:
             await asyncio.to_thread(self._update_summary_sync, transcription_id, summary, user_id)
         except Exception as exc:
             raise DatabaseServiceError("⚠️ Не удалось обновить сохраненный конспект.") from exc
+
+    async def find_user(self, identifier: str) -> UserPlanRecord | None:
+        try:
+            return await asyncio.to_thread(self._find_user_sync, identifier)
+        except Exception as exc:
+            raise DatabaseServiceError("⚠️ Не удалось найти пользователя в базе.") from exc
+
+    def _find_user_sync(self, identifier: str) -> UserPlanRecord | None:
+        value = (identifier or "").strip()
+        if not value:
+            return None
+        if value.startswith("@"):
+            value = value[1:]
+
+        rows: list[dict[str, Any]] = []
+        if value.isdigit():
+            response = (
+                self.client.table("users")
+                .select("id, username, plan, created_at")
+                .eq("id", int(value))
+                .limit(1)
+                .execute()
+            )
+            rows = response.data or []
+        if not rows:
+            response = (
+                self.client.table("users")
+                .select("id, username, plan, created_at")
+                .eq("username", value)
+                .limit(1)
+                .execute()
+            )
+            rows = response.data or []
+        if not rows:
+            return None
+
+        item = rows[0]
+        return UserPlanRecord(
+            id=int(item["id"]),
+            username=item.get("username"),
+            plan=item.get("plan", "free"),
+            created_at=item.get("created_at", ""),
+        )
+
+    async def set_user_plan(self, user_id: int, plan: str) -> UserPlanRecord:
+        if plan not in PLAN_LIMITS:
+            raise DatabaseServiceError("⚠️ Неизвестный тариф. Доступно: free, pro, premium.")
+        try:
+            return await asyncio.to_thread(self._set_user_plan_sync, user_id, plan)
+        except DatabaseServiceError:
+            raise
+        except Exception as exc:
+            raise DatabaseServiceError("⚠️ Не удалось изменить тариф пользователя.") from exc
+
+    def _set_user_plan_sync(self, user_id: int, plan: str) -> UserPlanRecord:
+        response = (
+            self.client.table("users")
+            .update({"plan": plan})
+            .eq("id", user_id)
+            .execute()
+        )
+        rows = response.data or []
+        if not rows:
+            raise DatabaseServiceError("⚠️ Пользователь не найден. Пусть сначала нажмёт /start.")
+        item = rows[0]
+        return UserPlanRecord(
+            id=int(item["id"]),
+            username=item.get("username"),
+            plan=item.get("plan", "free"),
+            created_at=item.get("created_at", ""),
+        )
+
+    async def list_users_with_plans(self, limit: int = 100) -> list[UserPlanRecord]:
+        try:
+            return await asyncio.to_thread(self._list_users_with_plans_sync, limit)
+        except Exception as exc:
+            raise DatabaseServiceError("⚠️ Не удалось загрузить список пользователей.") from exc
+
+    def _list_users_with_plans_sync(self, limit: int) -> list[UserPlanRecord]:
+        response = (
+            self.client.table("users")
+            .select("id, username, plan, created_at")
+            .order("created_at", desc=True)
+            .limit(limit)
+            .execute()
+        )
+        return [
+            UserPlanRecord(
+                id=int(item["id"]),
+                username=item.get("username"),
+                plan=item.get("plan", "free"),
+                created_at=item.get("created_at", ""),
+            )
+            for item in (response.data or [])
+        ]
 
     async def get_model_usage(self, user_id: int, provider: str) -> int:
         return await asyncio.to_thread(self._get_model_usage_sync, user_id, provider)

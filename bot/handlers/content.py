@@ -40,18 +40,22 @@ EMPTY_SUMMARY_MARKERS = (
 )
 
 
+def _menu_for_username(username: str | None):
+    return main_menu_keyboard(username)
+
+
 async def _check_limit(message: Message, db: DatabaseService) -> UsageStatus | None:
     try:
         await db.ensure_user(message.from_user.id, message.from_user.username)
         status = await db.get_usage_status(message.from_user.id, message.from_user.username)
     except DatabaseServiceError as exc:
-        await message.answer(str(exc), reply_markup=main_menu_keyboard())
+        await message.answer(str(exc), reply_markup=_menu_for_username(message.from_user.username))
         return None
     if status.is_exceeded:
         limit = status.limit or 5
         await message.answer(
             f"❌ Лимит исчерпан. Осталось: 0/{limit}. Оформи подписку /plans",
-            reply_markup=main_menu_keyboard(),
+            reply_markup=_menu_for_username(message.from_user.username),
         )
         return None
     return status
@@ -222,9 +226,9 @@ async def _send_markdown_file(
             os.unlink(temp_path)
 
 
-async def _update_progress(progress_message: Message, text: str) -> None:
+async def _update_progress(progress_message: Message, text: str, username: str | None) -> None:
     try:
-        await progress_message.edit_text(text, reply_markup=main_menu_keyboard())
+        await progress_message.edit_text(text, reply_markup=_menu_for_username(username))
     except Exception:
         logger.debug("Failed to update progress message", exc_info=True)
 
@@ -243,6 +247,7 @@ async def _finalize(
         await _update_progress(
             thinking_message,
             f"🧠 Собираю конспект через {_provider_title(provider)} и выделяю главное...",
+            message.from_user.username,
         )
 
     summary = await summarizer.summarize_text(processed.text, style_key=style_key, provider=provider)
@@ -275,7 +280,7 @@ async def _finalize(
     await message.answer(
         _format_summary(summary, processed.meta, status),
         parse_mode="HTML",
-        reply_markup=main_menu_keyboard(),
+        reply_markup=_menu_for_username(message.from_user.username),
     )
     if record is not None:
         await message.answer(
@@ -289,7 +294,7 @@ async def _finalize(
     else:
         await message.answer(
             "🗂 На тарифе Free история не сохраняется. Для сохранения конспектов перейди на /plans.",
-            reply_markup=main_menu_keyboard(),
+            reply_markup=_menu_for_username(message.from_user.username),
         )
     await _send_markdown_file(message, summary, processed, status)
 
@@ -306,7 +311,7 @@ async def _handle_processing_error(
         except Exception:
             logger.debug("Failed to delete thinking message", exc_info=True)
     error_text = str(exc) if isinstance(exc, (ProcessingError, YouTubeProcessingError, SummaryServiceError, DatabaseServiceError)) else ERROR_TEXT
-    await message.answer(error_text, reply_markup=main_menu_keyboard())
+    await message.answer(error_text, reply_markup=_menu_for_username(message.from_user.username))
 
 
 @router.message(F.voice)
@@ -320,9 +325,9 @@ async def handle_voice(
     if status is None:
         return
     if not _is_source_allowed(status.plan, "voice", message.from_user.username):
-        await message.answer("⚠️ На тарифе Free доступны только ГС, кружки и аудио.", reply_markup=main_menu_keyboard())
+        await message.answer("⚠️ На тарифе Free доступны только ГС, кружки и аудио.", reply_markup=_menu_for_username(message.from_user.username))
         return
-    thinking_message = await message.answer("🎙 Принял голосовое. Извлекаю текст...", reply_markup=main_menu_keyboard())
+    thinking_message = await message.answer("🎙 Принял голосовое. Извлекаю текст...", reply_markup=_menu_for_username(message.from_user.username))
     try:
         processed = await transcriber.process_voice(message.bot, message.voice)
         await _finalize(message, processed, db, summarizer, status, thinking_message)
@@ -341,9 +346,9 @@ async def handle_video_note(
     if status is None:
         return
     if not _is_source_allowed(status.plan, "video_note", message.from_user.username):
-        await message.answer("⚠️ На тарифе Free доступны только ГС, кружки и аудио.", reply_markup=main_menu_keyboard())
+        await message.answer("⚠️ На тарифе Free доступны только ГС, кружки и аудио.", reply_markup=_menu_for_username(message.from_user.username))
         return
-    thinking_message = await message.answer("🎥 Получил кружок. Достаю аудио и текст...", reply_markup=main_menu_keyboard())
+    thinking_message = await message.answer("🎥 Получил кружок. Достаю аудио и текст...", reply_markup=_menu_for_username(message.from_user.username))
     try:
         processed = await transcriber.process_video_note(message.bot, message.video_note)
         await _finalize(message, processed, db, summarizer, status, thinking_message)
@@ -362,9 +367,9 @@ async def handle_video(
     if status is None:
         return
     if not _is_source_allowed(status.plan, "video", message.from_user.username):
-        await message.answer("⚠️ На тарифе Free доступны только ГС, кружки и аудио.", reply_markup=main_menu_keyboard())
+        await message.answer("⚠️ На тарифе Free доступны только ГС, кружки и аудио.", reply_markup=_menu_for_username(message.from_user.username))
         return
-    thinking_message = await message.answer("🎬 Видео получено. Извлекаю дорожку и текст...", reply_markup=main_menu_keyboard())
+    thinking_message = await message.answer("🎬 Видео получено. Извлекаю дорожку и текст...", reply_markup=_menu_for_username(message.from_user.username))
     try:
         processed = await transcriber.process_video(message.bot, message.video)
         await _finalize(message, processed, db, summarizer, status, thinking_message)
@@ -386,9 +391,9 @@ async def handle_document(
     if status is None:
         return
     if not _is_source_allowed(status.plan, "pdf", message.from_user.username):
-        await message.answer("⚠️ На тарифе Free доступны только ГС, кружки и аудио.", reply_markup=main_menu_keyboard())
+        await message.answer("⚠️ На тарифе Free доступны только ГС, кружки и аудио.", reply_markup=_menu_for_username(message.from_user.username))
         return
-    thinking_message = await message.answer("📄 PDF принят. Извлекаю текст со страниц...", reply_markup=main_menu_keyboard())
+    thinking_message = await message.answer("📄 PDF принят. Извлекаю текст со страниц...", reply_markup=_menu_for_username(message.from_user.username))
     try:
         processed = await transcriber.process_pdf(message.bot, document)
         await _finalize(message, processed, db, summarizer, status, thinking_message)
@@ -411,9 +416,9 @@ async def handle_links(
         return
     source_type = "youtube" if "youtu" in url else "url"
     if not _is_source_allowed(status.plan, source_type, message.from_user.username):
-        await message.answer("⚠️ На тарифе Free доступны только ГС, кружки и аудио.", reply_markup=main_menu_keyboard())
+        await message.answer("⚠️ На тарифе Free доступны только ГС, кружки и аудио.", reply_markup=_menu_for_username(message.from_user.username))
         return
-    thinking_message = await message.answer("🔎 Смотрю ссылку и достаю исходный текст...", reply_markup=main_menu_keyboard())
+    thinking_message = await message.answer("🔎 Смотрю ссылку и достаю исходный текст...", reply_markup=_menu_for_username(message.from_user.username))
     if source_type == "youtube":
         try:
             text = await get_youtube_transcript(url)
@@ -425,7 +430,7 @@ async def handle_links(
             await message.answer(
                 "⚠️ Не удалось получить субтитры.\n"
                 "Попробуй скачать видео и отправить файлом прямо в чат.",
-                reply_markup=main_menu_keyboard(),
+                reply_markup=_menu_for_username(message.from_user.username),
             )
             return
 
@@ -454,9 +459,9 @@ async def handle_audio(
     if status is None:
         return
     if not _is_source_allowed(status.plan, "audio", message.from_user.username):
-        await message.answer("⚠️ На тарифе Free доступны только ГС, кружки и аудио.", reply_markup=main_menu_keyboard())
+        await message.answer("⚠️ На тарифе Free доступны только ГС, кружки и аудио.", reply_markup=_menu_for_username(message.from_user.username))
         return
-    thinking_message = await message.answer("🎧 Аудио получено. Распознаю речь...", reply_markup=main_menu_keyboard())
+    thinking_message = await message.answer("🎧 Аудио получено. Распознаю речь...", reply_markup=_menu_for_username(message.from_user.username))
     try:
         processed = await transcriber.process_audio(message.bot, message.audio)
         await _finalize(message, processed, db, summarizer, status, thinking_message)
@@ -515,7 +520,7 @@ async def handle_summary_actions(
         await callback.answer(f"Пересобираю: {style_title} через {_provider_title(provider)}")
         progress = await callback.message.answer(
             "🪄 Пересобираю конспект в новом формате...",
-            reply_markup=main_menu_keyboard(),
+            reply_markup=_menu_for_username(callback.from_user.username),
         )
 
         summary = await summarizer.summarize_text(record.transcript, style_key=style_key, provider=provider)
@@ -531,7 +536,7 @@ async def handle_summary_actions(
         await callback.message.answer(
             _format_summary(summary, processed.meta, status),
             parse_mode="HTML",
-            reply_markup=main_menu_keyboard(),
+            reply_markup=_menu_for_username(callback.from_user.username),
         )
         await callback.message.answer(
             "🎛 <b>Можно пересобрать еще раз в другом стиле.</b>",
