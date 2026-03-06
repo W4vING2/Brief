@@ -4,6 +4,7 @@ from aiogram.exceptions import TelegramBadRequest
 from aiogram.types import BotCommand
 from aiogram.webhook.aiohttp_server import SimpleRequestHandler, setup_application
 from dotenv import load_dotenv
+import logging
 import os
 from urllib.parse import urlparse
 
@@ -11,6 +12,8 @@ from bot.handlers import content, start
 from bot.services import DatabaseService, SummaryService, TranscriptionService
 
 load_dotenv()
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 BOT_TOKEN = os.getenv("BOT_TOKEN")
 GROQ_API_KEY = os.getenv("GROQ_API_KEY")
@@ -20,7 +23,7 @@ SUPABASE_URL = os.getenv("SUPABASE_URL")
 SUPABASE_KEY = os.getenv("SUPABASE_KEY")
 
 
-def _resolve_webhook_url() -> str:
+def _resolve_webhook_url() -> tuple[str, str]:
     raw = (
         os.getenv("WEBHOOK_URL")
         or os.getenv("RENDER_EXTERNAL_URL")
@@ -56,10 +59,11 @@ def _resolve_webhook_url() -> str:
     path = parsed.path or ""
     if not path or path == "/":
         url = url.rstrip("/") + "/webhook"
-    return url
+        path = "/webhook"
+    return url, path
 
 
-WEBHOOK_URL = _resolve_webhook_url()
+WEBHOOK_URL, WEBHOOK_PATH = _resolve_webhook_url()
 
 missing = [
     name
@@ -102,8 +106,10 @@ async def setup_commands() -> None:
 
 async def on_startup(bot: Bot):
     try:
+        await bot.delete_webhook(drop_pending_updates=False)
         await bot.set_webhook(url=WEBHOOK_URL)
         await setup_commands()
+        logger.info("Webhook configured: %s", WEBHOOK_URL)
     except TelegramBadRequest as exc:
         await bot.session.close()
         raise RuntimeError(
@@ -120,17 +126,25 @@ async def on_shutdown(bot: Bot):
 def main():
     app = web.Application()
 
+    async def health(_: web.Request) -> web.Response:
+        return web.Response(text="ok")
+
+    app.router.add_get("/", health)
+    app.router.add_get("/healthz", health)
+
     SimpleRequestHandler(
         dispatcher=dp,
         bot=bot,
-    ).register(app, path="/webhook")
+    ).register(app, path=WEBHOOK_PATH)
 
     setup_application(app, dp, bot=bot)
 
     app.on_startup.append(lambda app: on_startup(bot))
     app.on_shutdown.append(lambda app: on_shutdown(bot))
 
-    web.run_app(app, host="0.0.0.0", port=int(os.getenv("PORT", 8080)))
+    port = int(os.getenv("PORT", 8080))
+    logger.info("Starting aiohttp server on 0.0.0.0:%s with webhook path %s", port, WEBHOOK_PATH)
+    web.run_app(app, host="0.0.0.0", port=port)
 
 
 if __name__ == "__main__":
