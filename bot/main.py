@@ -1,9 +1,11 @@
 from aiohttp import web
 from aiogram import Bot, Dispatcher
+from aiogram.exceptions import TelegramBadRequest
 from aiogram.types import BotCommand
 from aiogram.webhook.aiohttp_server import SimpleRequestHandler, setup_application
 from dotenv import load_dotenv
 import os
+from urllib.parse import urlparse
 
 from bot.handlers import content, start
 from bot.services import DatabaseService, SummaryService, TranscriptionService
@@ -11,18 +13,58 @@ from bot.services import DatabaseService, SummaryService, TranscriptionService
 load_dotenv()
 
 BOT_TOKEN = os.getenv("BOT_TOKEN")
-WEBHOOK_URL = os.getenv("WEBHOOK_URL")
 GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY")
 SUPABASE_URL = os.getenv("SUPABASE_URL")
 SUPABASE_KEY = os.getenv("SUPABASE_KEY")
 
+
+def _resolve_webhook_url() -> str:
+    raw = (
+        os.getenv("WEBHOOK_URL")
+        or os.getenv("RENDER_EXTERNAL_URL")
+        or os.getenv("RAILWAY_STATIC_URL")
+        or os.getenv("KOYEB_PUBLIC_DOMAIN")
+    )
+    if not raw:
+        raise RuntimeError(
+            "Missing WEBHOOK_URL. Set WEBHOOK_URL to a public HTTPS URL "
+            "ending with /webhook."
+        )
+
+    url = raw.strip()
+    if "$" in url:
+        raise RuntimeError(
+            "WEBHOOK_URL contains an unresolved variable. Use a real public URL, "
+            "for example: https://your-app-domain.com/webhook"
+        )
+    if url.startswith("http://"):
+        raise RuntimeError("WEBHOOK_URL must use HTTPS, not HTTP.")
+    if not url.startswith("https://"):
+        url = f"https://{url}"
+
+    parsed = urlparse(url)
+    if not parsed.netloc:
+        raise RuntimeError(
+            "Invalid WEBHOOK_URL host. Use a resolvable public domain, "
+            "for example: https://your-app-domain.com/webhook"
+        )
+    if "localhost" in parsed.netloc or parsed.netloc.startswith("127."):
+        raise RuntimeError("WEBHOOK_URL cannot point to localhost or 127.0.0.1.")
+
+    path = parsed.path or ""
+    if not path or path == "/":
+        url = url.rstrip("/") + "/webhook"
+    return url
+
+
+WEBHOOK_URL = _resolve_webhook_url()
+
 missing = [
     name
     for name, value in {
         "BOT_TOKEN": BOT_TOKEN,
-        "WEBHOOK_URL": WEBHOOK_URL,
         "GROQ_API_KEY": GROQ_API_KEY,
         "SUPABASE_URL": SUPABASE_URL,
         "SUPABASE_KEY": SUPABASE_KEY,
@@ -59,8 +101,15 @@ async def setup_commands() -> None:
 
 
 async def on_startup(bot: Bot):
-    await bot.set_webhook(url=WEBHOOK_URL)
-    await setup_commands()
+    try:
+        await bot.set_webhook(url=WEBHOOK_URL)
+        await setup_commands()
+    except TelegramBadRequest as exc:
+        await bot.session.close()
+        raise RuntimeError(
+            "Failed to set Telegram webhook. Check WEBHOOK_URL DNS and HTTPS certificate. "
+            "Expected public URL format: https://your-app-domain.com/webhook"
+        ) from exc
 
 
 async def on_shutdown(bot: Bot):
