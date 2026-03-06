@@ -1,41 +1,53 @@
-from __future__ import annotations
-
-import asyncio
-import logging
-import os
-from logging.handlers import RotatingFileHandler
-from pathlib import Path
-
+from aiohttp import web
 from aiogram import Bot, Dispatcher
-from aiogram.client.default import DefaultBotProperties
 from aiogram.types import BotCommand
+from aiogram.webhook.aiohttp_server import SimpleRequestHandler, setup_application
 from dotenv import load_dotenv
+import os
 
-from bot.handlers import content_router, start_router
+from bot.handlers import content, start
 from bot.services import DatabaseService, SummaryService, TranscriptionService
 
+load_dotenv()
 
-def create_dispatcher(
-    *,
-    db: DatabaseService,
-    transcriber: TranscriptionService,
-    summarizer: SummaryService,
-) -> Dispatcher:
-    dispatcher = Dispatcher(
-        db=db,
-        transcriber=transcriber,
-        summarizer=summarizer,
-    )
-    dispatcher.include_router(start_router)
-    dispatcher.include_router(content_router)
-    return dispatcher
+BOT_TOKEN = os.getenv("BOT_TOKEN")
+WEBHOOK_URL = os.getenv("WEBHOOK_URL")
+GROQ_API_KEY = os.getenv("GROQ_API_KEY")
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY")
+SUPABASE_URL = os.getenv("SUPABASE_URL")
+SUPABASE_KEY = os.getenv("SUPABASE_KEY")
+
+missing = [
+    name
+    for name, value in {
+        "BOT_TOKEN": BOT_TOKEN,
+        "WEBHOOK_URL": WEBHOOK_URL,
+        "GROQ_API_KEY": GROQ_API_KEY,
+        "SUPABASE_URL": SUPABASE_URL,
+        "SUPABASE_KEY": SUPABASE_KEY,
+    }.items()
+    if not value
+]
+if missing:
+    raise RuntimeError(f"Missing environment variables: {', '.join(missing)}")
+
+bot = Bot(token=BOT_TOKEN)
+dp = Dispatcher()
+
+dp.include_router(start.router)
+dp.include_router(content.router)
+
+dp["db"] = DatabaseService(SUPABASE_URL, SUPABASE_KEY)
+dp["transcriber"] = TranscriptionService(GROQ_API_KEY)
+dp["summarizer"] = SummaryService(
+    GROQ_API_KEY,
+    openai_api_key=OPENAI_API_KEY,
+    anthropic_api_key=ANTHROPIC_API_KEY,
+)
 
 
-async def on_shutdown(bot: Bot) -> None:
-    await bot.session.close()
-
-
-async def setup_commands(bot: Bot) -> None:
+async def setup_commands() -> None:
     await bot.set_my_commands(
         [
             BotCommand(command="start", description="Запустить бота"),
@@ -46,62 +58,31 @@ async def setup_commands(bot: Bot) -> None:
     )
 
 
-def configure_logging() -> None:
-    log_dir = Path("logs")
-    log_dir.mkdir(exist_ok=True)
-    file_handler = RotatingFileHandler(log_dir / "briefbot.log", maxBytes=1_000_000, backupCount=3, encoding="utf-8")
-    stream_handler = logging.StreamHandler()
-    logging.basicConfig(
-        level=logging.INFO,
-        format="%(asctime)s %(levelname)s [%(name)s] %(message)s",
-        handlers=[stream_handler, file_handler],
-    )
+async def on_startup(bot: Bot):
+    await bot.set_webhook(url=WEBHOOK_URL)
+    await setup_commands()
 
 
-async def main() -> None:
-    load_dotenv()
+async def on_shutdown(bot: Bot):
+    await bot.delete_webhook()
+    await bot.session.close()
 
-    bot_token = os.getenv("BOT_TOKEN")
-    groq_api_key = os.getenv("GROQ_API_KEY")
-    openai_api_key = os.getenv("OPENAI_API_KEY")
-    anthropic_api_key = os.getenv("ANTHROPIC_API_KEY")
-    supabase_url = os.getenv("SUPABASE_URL")
-    supabase_key = os.getenv("SUPABASE_KEY")
 
-    missing = [
-        name
-        for name, value in {
-            "BOT_TOKEN": bot_token,
-            "GROQ_API_KEY": groq_api_key,
-            "SUPABASE_URL": supabase_url,
-            "SUPABASE_KEY": supabase_key,
-        }.items()
-        if not value
-    ]
-    if missing:
-        raise RuntimeError(f"Missing environment variables: {', '.join(missing)}")
+def main():
+    app = web.Application()
 
-    bot = Bot(
-        token=bot_token,
-        default=DefaultBotProperties(),
-    )
-    db = DatabaseService(supabase_url, supabase_key)
-    transcriber = TranscriptionService(groq_api_key)
-    summarizer = SummaryService(
-        groq_api_key,
-        openai_api_key=openai_api_key,
-        anthropic_api_key=anthropic_api_key,
-    )
-    dispatcher = create_dispatcher(
-        db=db,
-        transcriber=transcriber,
-        summarizer=summarizer,
-    )
-    dispatcher.shutdown.register(on_shutdown)
-    configure_logging()
-    await setup_commands(bot)
-    await dispatcher.start_polling(bot)
+    SimpleRequestHandler(
+        dispatcher=dp,
+        bot=bot,
+    ).register(app, path="/webhook")
+
+    setup_application(app, dp, bot=bot)
+
+    app.on_startup.append(lambda app: on_startup(bot))
+    app.on_shutdown.append(lambda app: on_shutdown(bot))
+
+    web.run_app(app, host="0.0.0.0", port=int(os.getenv("PORT", 8080)))
 
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    main()
