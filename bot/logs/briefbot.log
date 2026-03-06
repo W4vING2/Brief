@@ -1,0 +1,640 @@
+2026-03-06 17:11:39,392 INFO [aiogram.dispatcher] Start polling
+2026-03-06 17:11:39,482 INFO [aiogram.dispatcher] Run polling for bot @TheBriefSummaryBot id=8650692689 - 'BriefBot'
+2026-03-06 17:11:48,542 INFO [aiogram.event] Update id=930176270 is not handled. Duration 1478 ms by bot id=8650692689
+2026-03-06 17:11:48,543 ERROR [aiogram.event] Cause exception while process update id=930176270 by bot id=8650692689
+DatabaseServiceError: ⚠️ База временно недоступна. Попробуй еще раз чуть позже.
+Traceback (most recent call last):
+  File "/Users/danilavaganov/Documents/freelance_projects/BriefBot/.venv/lib/python3.14/site-packages/httpx/_transports/default.py", line 101, in map_httpcore_exceptions
+    yield
+  File "/Users/danilavaganov/Documents/freelance_projects/BriefBot/.venv/lib/python3.14/site-packages/httpx/_transports/default.py", line 250, in handle_request
+    resp = self._pool.handle_request(req)
+  File "/Users/danilavaganov/Documents/freelance_projects/BriefBot/.venv/lib/python3.14/site-packages/httpcore/_sync/connection_pool.py", line 256, in handle_request
+    raise exc from None
+  File "/Users/danilavaganov/Documents/freelance_projects/BriefBot/.venv/lib/python3.14/site-packages/httpcore/_sync/connection_pool.py", line 236, in handle_request
+    response = connection.handle_request(
+        pool_request.request
+    )
+  File "/Users/danilavaganov/Documents/freelance_projects/BriefBot/.venv/lib/python3.14/site-packages/httpcore/_sync/connection.py", line 103, in handle_request
+    return self._connection.handle_request(request)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "/Users/danilavaganov/Documents/freelance_projects/BriefBot/.venv/lib/python3.14/site-packages/httpcore/_sync/http2.py", line 187, in handle_request
+    raise exc
+  File "/Users/danilavaganov/Documents/freelance_projects/BriefBot/.venv/lib/python3.14/site-packages/httpcore/_sync/http2.py", line 150, in handle_request
+    status, headers = self._receive_response(
+                      ~~~~~~~~~~~~~~~~~~~~~~^
+        request=request, stream_id=stream_id
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/danilavaganov/Documents/freelance_projects/BriefBot/.venv/lib/python3.14/site-packages/httpcore/_sync/http2.py", line 294, in _receive_response
+    event = self._receive_stream_event(request, stream_id)
+  File "/Users/danilavaganov/Documents/freelance_projects/BriefBot/.venv/lib/python3.14/site-packages/httpcore/_sync/http2.py", line 336, in _receive_stream_event
+    self._receive_events(request, stream_id)
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "/Users/danilavaganov/Documents/freelance_projects/BriefBot/.venv/lib/python3.14/site-packages/httpcore/_sync/http2.py", line 364, in _receive_events
+    events = self._read_incoming_data(request)
+  File "/Users/danilavaganov/Documents/freelance_projects/BriefBot/.venv/lib/python3.14/site-packages/httpcore/_sync/http2.py", line 455, in _read_incoming_data
+    raise exc
+  File "/Users/danilavaganov/Documents/freelance_projects/BriefBot/.venv/lib/python3.14/site-packages/httpcore/_sync/http2.py", line 443, in _read_incoming_data
+    raise RemoteProtocolError("Server disconnected")
+httpcore.RemoteProtocolError: Server disconnected
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/danilavaganov/Documents/freelance_projects/BriefBot/bot/services/database.py", line 59, in ensure_user
+    return await asyncio.to_thread(self._ensure_user_sync, user_id, username)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/danilavaganov/.local/share/uv/python/cpython-3.14.3-macos-aarch64-none/lib/python3.14/asyncio/threads.py", line 25, in to_thread
+    return await loop.run_in_executor(None, func_call)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/danilavaganov/.local/share/uv/python/cpython-3.14.3-macos-aarch64-none/lib/python3.14/concurrent/futures/thread.py", line 86, in run
+    result = ctx.run(self.task)
+  File "/Users/danilavaganov/.local/share/uv/python/cpython-3.14.3-macos-aarch64-none/lib/python3.14/concurrent/futures/thread.py", line 73, in run
+    return fn(*args, **kwargs)
+  File "/Users/danilavaganov/Documents/freelance_projects/BriefBot/bot/services/database.py", line 69, in _ensure_user_sync
+    .execute()
+     ~~~~~~~^^
+  File "/Users/danilavaganov/Documents/freelance_projects/BriefBot/.venv/lib/python3.14/site-packages/postgrest/_sync/request_builder.py", line 47, in execute
+    r = self.request.send()
+  File "/Users/danilavaganov/Documents/freelance_projects/BriefBot/.venv/lib/python3.14/site-packages/postgrest/base_request_builder.py", line 82, in send
+    return self.session.request(
+           ~~~~~~~~~~~~~~~~~~~~^
+        self.http_method,
+        ^^^^^^^^^^^^^^^^^
+    ...<4 lines>...
+        auth=self.auth,
+        ^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/danilavaganov/Documents/freelance_projects/BriefBot/.venv/lib/python3.14/site-packages/httpx/_client.py", line 825, in request
+    return self.send(request, auth=auth, follow_redirects=follow_redirects)
+           ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/danilavaganov/Documents/freelance_projects/BriefBot/.venv/lib/python3.14/site-packages/httpx/_client.py", line 914, in send
+    response = self._send_handling_auth(
+        request,
+    ...<2 lines>...
+        history=[],
+    )
+  File "/Users/danilavaganov/Documents/freelance_projects/BriefBot/.venv/lib/python3.14/site-packages/httpx/_client.py", line 942, in _send_handling_auth
+    response = self._send_handling_redirects(
+        request,
+        follow_redirects=follow_redirects,
+        history=history,
+    )
+  File "/Users/danilavaganov/Documents/freelance_projects/BriefBot/.venv/lib/python3.14/site-packages/httpx/_client.py", line 979, in _send_handling_redirects
+    response = self._send_single_request(request)
+  File "/Users/danilavaganov/Documents/freelance_projects/BriefBot/.venv/lib/python3.14/site-packages/httpx/_client.py", line 1014, in _send_single_request
+    response = transport.handle_request(request)
+  File "/Users/danilavaganov/Documents/freelance_projects/BriefBot/.venv/lib/python3.14/site-packages/httpx/_transports/default.py", line 249, in handle_request
+    with map_httpcore_exceptions():
+         ~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/Users/danilavaganov/.local/share/uv/python/cpython-3.14.3-macos-aarch64-none/lib/python3.14/contextlib.py", line 162, in __exit__
+    self.gen.throw(value)
+    ~~~~~~~~~~~~~~^^^^^^^
+  File "/Users/danilavaganov/Documents/freelance_projects/BriefBot/.venv/lib/python3.14/site-packages/httpx/_transports/default.py", line 118, in map_httpcore_exceptions
+    raise mapped_exc(message) from exc
+httpx.RemoteProtocolError: Server disconnected
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/danilavaganov/Documents/freelance_projects/BriefBot/.venv/lib/python3.14/site-packages/aiogram/dispatcher/dispatcher.py", line 320, in _process_update
+    response = await self.feed_update(bot, update, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/danilavaganov/Documents/freelance_projects/BriefBot/.venv/lib/python3.14/site-packages/aiogram/dispatcher/dispatcher.py", line 164, in feed_update
+    response = await self.update.wrap_outer_middleware(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<7 lines>...
+    )
+    ^
+  File "/Users/danilavaganov/Documents/freelance_projects/BriefBot/.venv/lib/python3.14/site-packages/aiogram/dispatcher/middlewares/error.py", line 27, in __call__
+    return await handler(event, data)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/danilavaganov/Documents/freelance_projects/BriefBot/.venv/lib/python3.14/site-packages/aiogram/dispatcher/middlewares/user_context.py", line 58, in __call__
+    return await handler(event, data)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/danilavaganov/Documents/freelance_projects/BriefBot/.venv/lib/python3.14/site-packages/aiogram/fsm/middleware.py", line 43, in __call__
+    return await handler(event, data)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/danilavaganov/Documents/freelance_projects/BriefBot/.venv/lib/python3.14/site-packages/aiogram/dispatcher/event/telegram.py", line 126, in trigger
+    return await wrapped_inner(event, kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/danilavaganov/Documents/freelance_projects/BriefBot/.venv/lib/python3.14/site-packages/aiogram/dispatcher/event/handler.py", line 71, in call
+    return await wrapped()
+           ^^^^^^^^^^^^^^^
+  File "/Users/danilavaganov/Documents/freelance_projects/BriefBot/.venv/lib/python3.14/site-packages/aiogram/dispatcher/dispatcher.py", line 283, in _listen_update
+    return await self.propagate_event(update_type=update_type, event=event, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/danilavaganov/Documents/freelance_projects/BriefBot/.venv/lib/python3.14/site-packages/aiogram/dispatcher/router.py", line 161, in propagate_event
+    return await observer.wrap_outer_middleware(_wrapped, event=event, data=kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/danilavaganov/Documents/freelance_projects/BriefBot/.venv/lib/python3.14/site-packages/aiogram/dispatcher/router.py", line 153, in _wrapped
+    return await self._propagate_event(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<4 lines>...
+    )
+    ^
+  File "/Users/danilavaganov/Documents/freelance_projects/BriefBot/.venv/lib/python3.14/site-packages/aiogram/dispatcher/router.py", line 189, in _propagate_event
+    response = await router.propagate_event(update_type=update_type, event=event, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/danilavaganov/Documents/freelance_projects/BriefBot/.venv/lib/python3.14/site-packages/aiogram/dispatcher/router.py", line 161, in propagate_event
+    return await observer.wrap_outer_middleware(_wrapped, event=event, data=kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/danilavaganov/Documents/freelance_projects/BriefBot/.venv/lib/python3.14/site-packages/aiogram/dispatcher/router.py", line 153, in _wrapped
+    return await self._propagate_event(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<4 lines>...
+    )
+    ^
+  File "/Users/danilavaganov/Documents/freelance_projects/BriefBot/.venv/lib/python3.14/site-packages/aiogram/dispatcher/router.py", line 181, in _propagate_event
+    response = await observer.trigger(event, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/danilavaganov/Documents/freelance_projects/BriefBot/.venv/lib/python3.14/site-packages/aiogram/dispatcher/event/telegram.py", line 126, in trigger
+    return await wrapped_inner(event, kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/danilavaganov/Documents/freelance_projects/BriefBot/.venv/lib/python3.14/site-packages/aiogram/dispatcher/event/handler.py", line 71, in call
+    return await wrapped()
+           ^^^^^^^^^^^^^^^
+  File "/Users/danilavaganov/Documents/freelance_projects/BriefBot/bot/handlers/start.py", line 15, in cmd_start
+    await db.ensure_user(message.from_user.id, message.from_user.username)
+  File "/Users/danilavaganov/Documents/freelance_projects/BriefBot/bot/services/database.py", line 61, in ensure_user
+    raise DatabaseServiceError("⚠️ База временно недоступна. Попробуй еще раз чуть позже.") from exc
+bot.services.database.DatabaseServiceError: ⚠️ База временно недоступна. Попробуй еще раз чуть позже.
+2026-03-06 17:11:58,366 WARNING [aiogram.dispatcher] Received SIGINT signal
+2026-03-06 17:11:58,366 INFO [aiogram.dispatcher] Polling stopped for bot @TheBriefSummaryBot id=8650692689 - 'BriefBot'
+2026-03-06 17:11:58,366 INFO [aiogram.dispatcher] Polling stopped
+2026-03-06 17:11:58,568 WARNING [aiogram.dispatcher] Received SIGINT signal
+2026-03-06 17:12:01,659 INFO [aiogram.dispatcher] Start polling
+2026-03-06 17:12:01,749 INFO [aiogram.dispatcher] Run polling for bot @TheBriefSummaryBot id=8650692689 - 'BriefBot'
+2026-03-06 17:12:16,021 INFO [httpx] HTTP Request: GET https://fbpurnccfmrzxqsbslpc.supabase.co/rest/v1/users?select=%2A&id=eq.6490036537&limit=1 "HTTP/2 200 OK"
+2026-03-06 17:12:16,434 INFO [aiogram.event] Update id=930176271 is handled. Duration 1218 ms by bot id=8650692689
+2026-03-06 17:12:22,807 INFO [httpx] HTTP Request: GET https://fbpurnccfmrzxqsbslpc.supabase.co/rest/v1/users?select=%2A&id=eq.6490036537&limit=1 "HTTP/2 200 OK"
+2026-03-06 17:12:23,049 INFO [httpx] HTTP Request: GET https://fbpurnccfmrzxqsbslpc.supabase.co/rest/v1/users?select=plan&id=eq.6490036537&limit=1 "HTTP/2 200 OK"
+2026-03-06 17:12:23,253 INFO [httpx] HTTP Request: GET https://fbpurnccfmrzxqsbslpc.supabase.co/rest/v1/daily_usage?select=count&user_id=eq.6490036537&date=eq.2026-03-06&limit=1 "HTTP/2 200 OK"
+2026-03-06 17:12:23,499 INFO [httpx] HTTP Request: GET https://fbpurnccfmrzxqsbslpc.supabase.co/rest/v1/transcriptions?select=id%2Csource_type%2Ctranscript%2Csummary%2Ccreated_at&user_id=eq.6490036537&order=created_at.desc&limit=5 "HTTP/2 200 OK"
+2026-03-06 17:12:23,784 INFO [aiogram.event] Update id=930176272 is handled. Duration 1578 ms by bot id=8650692689
+2026-03-06 17:12:49,306 INFO [aiogram.event] Update id=930176273 is handled. Duration 169 ms by bot id=8650692689
+2026-03-06 17:12:52,959 INFO [aiogram.event] Update id=930176274 is handled. Duration 129 ms by bot id=8650692689
+2026-03-06 17:13:06,486 INFO [httpx] HTTP Request: GET https://fbpurnccfmrzxqsbslpc.supabase.co/rest/v1/users?select=%2A&id=eq.6490036537&limit=1 "HTTP/2 200 OK"
+2026-03-06 17:13:06,659 INFO [httpx] HTTP Request: GET https://fbpurnccfmrzxqsbslpc.supabase.co/rest/v1/users?select=plan&id=eq.6490036537&limit=1 "HTTP/2 200 OK"
+2026-03-06 17:13:06,859 INFO [httpx] HTTP Request: GET https://fbpurnccfmrzxqsbslpc.supabase.co/rest/v1/daily_usage?select=count&user_id=eq.6490036537&date=eq.2026-03-06&limit=1 "HTTP/2 200 OK"
+2026-03-06 17:13:08,308 ERROR [bot.handlers.content] Processing failed: ⚠️ Не удалось получить субтитры YouTube по этой ссылке
+Traceback (most recent call last):
+  File "/Users/danilavaganov/Documents/freelance_projects/BriefBot/bot/services/youtube.py", line 32, in fetch_youtube_transcript
+    transcript_list = await asyncio.to_thread(api.list, video_id)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/danilavaganov/.local/share/uv/python/cpython-3.14.3-macos-aarch64-none/lib/python3.14/asyncio/threads.py", line 25, in to_thread
+    return await loop.run_in_executor(None, func_call)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/danilavaganov/.local/share/uv/python/cpython-3.14.3-macos-aarch64-none/lib/python3.14/concurrent/futures/thread.py", line 86, in run
+    result = ctx.run(self.task)
+  File "/Users/danilavaganov/.local/share/uv/python/cpython-3.14.3-macos-aarch64-none/lib/python3.14/concurrent/futures/thread.py", line 73, in run
+    return fn(*args, **kwargs)
+  File "/Users/danilavaganov/Documents/freelance_projects/BriefBot/.venv/lib/python3.14/site-packages/youtube_transcript_api/_api.py", line 127, in list
+    return self._fetcher.fetch(video_id)
+           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^
+  File "/Users/danilavaganov/Documents/freelance_projects/BriefBot/.venv/lib/python3.14/site-packages/youtube_transcript_api/_transcripts.py", line 356, in fetch
+    self._fetch_captions_json(video_id),
+    ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^
+  File "/Users/danilavaganov/Documents/freelance_projects/BriefBot/.venv/lib/python3.14/site-packages/youtube_transcript_api/_transcripts.py", line 373, in _fetch_captions_json
+    raise exception.with_proxy_config(self._proxy_config)
+  File "/Users/danilavaganov/Documents/freelance_projects/BriefBot/.venv/lib/python3.14/site-packages/youtube_transcript_api/_transcripts.py", line 364, in _fetch_captions_json
+    return self._extract_captions_json(innertube_data, video_id)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/danilavaganov/Documents/freelance_projects/BriefBot/.venv/lib/python3.14/site-packages/youtube_transcript_api/_transcripts.py", line 385, in _extract_captions_json
+    self._assert_playability(innertube_data.get("playabilityStatus"), video_id)
+    ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/danilavaganov/Documents/freelance_projects/BriefBot/.venv/lib/python3.14/site-packages/youtube_transcript_api/_transcripts.py", line 404, in _assert_playability
+    raise RequestBlocked(video_id)
+youtube_transcript_api._errors.RequestBlocked: 
+Could not retrieve a transcript for the video https://www.youtube.com/watch?v=hcI14uadSOE! This is most likely caused by:
+
+YouTube is blocking requests from your IP. This usually is due to one of the following reasons:
+- You have done too many requests and your IP has been blocked by YouTube
+- You are doing requests from an IP belonging to a cloud provider (like AWS, Google Cloud Platform, Azure, etc.). Unfortunately, most IPs from cloud providers are blocked by YouTube.
+
+There are two things you can do to work around this:
+1. Use proxies to hide your IP address, as explained in the "Working around IP bans" section of the README (https://github.com/jdepoix/youtube-transcript-api?tab=readme-ov-file#working-around-ip-bans-requestblocked-or-ipblocked-exception).
+2. (NOT RECOMMENDED) If you authenticate your requests using cookies, you will be able to continue doing requests for a while. However, YouTube will eventually permanently ban the account that you have used to authenticate with! So only do this if you don't mind your account being banned!
+
+If you are sure that the described cause is not responsible for this error and that a transcript should be retrievable, please create an issue at https://github.com/jdepoix/youtube-transcript-api/issues. Please add which version of youtube_transcript_api you are using and provide the information needed to replicate the error. Also make sure that there are no open issues which already describe your problem!
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/danilavaganov/Documents/freelance_projects/BriefBot/bot/handlers/content.py", line 327, in handle_links
+    processed = await transcriber.process_url(url)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/danilavaganov/Documents/freelance_projects/BriefBot/bot/services/transcribe.py", line 105, in process_url
+    return await self.process_youtube(url)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/danilavaganov/Documents/freelance_projects/BriefBot/bot/services/transcribe.py", line 125, in process_youtube
+    transcript = await fetch_youtube_transcript(url)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/danilavaganov/Documents/freelance_projects/BriefBot/bot/services/youtube.py", line 41, in fetch_youtube_transcript
+    raise YouTubeProcessingError("⚠️ Не удалось получить субтитры YouTube по этой ссылке") from exc
+bot.services.youtube.YouTubeProcessingError: ⚠️ Не удалось получить субтитры YouTube по этой ссылке
+2026-03-06 17:13:08,539 INFO [aiogram.event] Update id=930176275 is handled. Duration 2751 ms by bot id=8650692689
+2026-03-06 17:13:29,847 INFO [httpx] HTTP Request: GET https://fbpurnccfmrzxqsbslpc.supabase.co/rest/v1/users?select=%2A&id=eq.6490036537&limit=1 "HTTP/2 200 OK"
+2026-03-06 17:13:30,033 INFO [httpx] HTTP Request: GET https://fbpurnccfmrzxqsbslpc.supabase.co/rest/v1/users?select=plan&id=eq.6490036537&limit=1 "HTTP/2 200 OK"
+2026-03-06 17:13:30,174 INFO [httpx] HTTP Request: GET https://fbpurnccfmrzxqsbslpc.supabase.co/rest/v1/daily_usage?select=count&user_id=eq.6490036537&date=eq.2026-03-06&limit=1 "HTTP/2 200 OK"
+2026-03-06 17:13:32,874 ERROR [bot.handlers.content] Processing failed: ⚠️ Не удалось получить субтитры YouTube по этой ссылке
+Traceback (most recent call last):
+  File "/Users/danilavaganov/Documents/freelance_projects/BriefBot/bot/services/youtube.py", line 32, in fetch_youtube_transcript
+    transcript_list = await asyncio.to_thread(api.list, video_id)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/danilavaganov/.local/share/uv/python/cpython-3.14.3-macos-aarch64-none/lib/python3.14/asyncio/threads.py", line 25, in to_thread
+    return await loop.run_in_executor(None, func_call)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/danilavaganov/.local/share/uv/python/cpython-3.14.3-macos-aarch64-none/lib/python3.14/concurrent/futures/thread.py", line 86, in run
+    result = ctx.run(self.task)
+  File "/Users/danilavaganov/.local/share/uv/python/cpython-3.14.3-macos-aarch64-none/lib/python3.14/concurrent/futures/thread.py", line 73, in run
+    return fn(*args, **kwargs)
+  File "/Users/danilavaganov/Documents/freelance_projects/BriefBot/.venv/lib/python3.14/site-packages/youtube_transcript_api/_api.py", line 127, in list
+    return self._fetcher.fetch(video_id)
+           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^
+  File "/Users/danilavaganov/Documents/freelance_projects/BriefBot/.venv/lib/python3.14/site-packages/youtube_transcript_api/_transcripts.py", line 356, in fetch
+    self._fetch_captions_json(video_id),
+    ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^
+  File "/Users/danilavaganov/Documents/freelance_projects/BriefBot/.venv/lib/python3.14/site-packages/youtube_transcript_api/_transcripts.py", line 373, in _fetch_captions_json
+    raise exception.with_proxy_config(self._proxy_config)
+  File "/Users/danilavaganov/Documents/freelance_projects/BriefBot/.venv/lib/python3.14/site-packages/youtube_transcript_api/_transcripts.py", line 364, in _fetch_captions_json
+    return self._extract_captions_json(innertube_data, video_id)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/danilavaganov/Documents/freelance_projects/BriefBot/.venv/lib/python3.14/site-packages/youtube_transcript_api/_transcripts.py", line 385, in _extract_captions_json
+    self._assert_playability(innertube_data.get("playabilityStatus"), video_id)
+    ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/danilavaganov/Documents/freelance_projects/BriefBot/.venv/lib/python3.14/site-packages/youtube_transcript_api/_transcripts.py", line 404, in _assert_playability
+    raise RequestBlocked(video_id)
+youtube_transcript_api._errors.RequestBlocked: 
+Could not retrieve a transcript for the video https://www.youtube.com/watch?v=_rkBx62J3Mk! This is most likely caused by:
+
+YouTube is blocking requests from your IP. This usually is due to one of the following reasons:
+- You have done too many requests and your IP has been blocked by YouTube
+- You are doing requests from an IP belonging to a cloud provider (like AWS, Google Cloud Platform, Azure, etc.). Unfortunately, most IPs from cloud providers are blocked by YouTube.
+
+There are two things you can do to work around this:
+1. Use proxies to hide your IP address, as explained in the "Working around IP bans" section of the README (https://github.com/jdepoix/youtube-transcript-api?tab=readme-ov-file#working-around-ip-bans-requestblocked-or-ipblocked-exception).
+2. (NOT RECOMMENDED) If you authenticate your requests using cookies, you will be able to continue doing requests for a while. However, YouTube will eventually permanently ban the account that you have used to authenticate with! So only do this if you don't mind your account being banned!
+
+If you are sure that the described cause is not responsible for this error and that a transcript should be retrievable, please create an issue at https://github.com/jdepoix/youtube-transcript-api/issues. Please add which version of youtube_transcript_api you are using and provide the information needed to replicate the error. Also make sure that there are no open issues which already describe your problem!
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/danilavaganov/Documents/freelance_projects/BriefBot/bot/handlers/content.py", line 327, in handle_links
+    processed = await transcriber.process_url(url)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/danilavaganov/Documents/freelance_projects/BriefBot/bot/services/transcribe.py", line 105, in process_url
+    return await self.process_youtube(url)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/danilavaganov/Documents/freelance_projects/BriefBot/bot/services/transcribe.py", line 125, in process_youtube
+    transcript = await fetch_youtube_transcript(url)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/danilavaganov/Documents/freelance_projects/BriefBot/bot/services/youtube.py", line 41, in fetch_youtube_transcript
+    raise YouTubeProcessingError("⚠️ Не удалось получить субтитры YouTube по этой ссылке") from exc
+bot.services.youtube.YouTubeProcessingError: ⚠️ Не удалось получить субтитры YouTube по этой ссылке
+2026-03-06 17:13:33,093 INFO [aiogram.event] Update id=930176276 is handled. Duration 3744 ms by bot id=8650692689
+2026-03-06 17:16:59,379 WARNING [aiogram.dispatcher] Received SIGINT signal
+2026-03-06 17:16:59,379 INFO [aiogram.dispatcher] Polling stopped for bot @TheBriefSummaryBot id=8650692689 - 'BriefBot'
+2026-03-06 17:16:59,379 INFO [aiogram.dispatcher] Polling stopped
+2026-03-06 17:16:59,581 WARNING [aiogram.dispatcher] Received SIGINT signal
+2026-03-06 17:17:19,418 INFO [aiogram.dispatcher] Start polling
+2026-03-06 17:17:19,516 INFO [aiogram.dispatcher] Run polling for bot @TheBriefSummaryBot id=8650692689 - 'BriefBot'
+2026-03-06 17:17:31,400 INFO [httpx] HTTP Request: GET https://fbpurnccfmrzxqsbslpc.supabase.co/rest/v1/users?select=%2A&id=eq.6490036537&limit=1 "HTTP/2 200 OK"
+2026-03-06 17:17:31,838 INFO [aiogram.event] Update id=930176277 is handled. Duration 1070 ms by bot id=8650692689
+2026-03-06 17:17:35,991 INFO [aiogram.event] Update id=930176278 is handled. Duration 157 ms by bot id=8650692689
+2026-03-06 17:17:39,144 INFO [httpx] HTTP Request: GET https://fbpurnccfmrzxqsbslpc.supabase.co/rest/v1/users?select=%2A&id=eq.6490036537&limit=1 "HTTP/2 200 OK"
+2026-03-06 17:17:39,270 INFO [httpx] HTTP Request: GET https://fbpurnccfmrzxqsbslpc.supabase.co/rest/v1/users?select=plan&id=eq.6490036537&limit=1 "HTTP/2 200 OK"
+2026-03-06 17:17:39,405 INFO [httpx] HTTP Request: GET https://fbpurnccfmrzxqsbslpc.supabase.co/rest/v1/daily_usage?select=count&user_id=eq.6490036537&date=eq.2026-03-06&limit=1 "HTTP/2 200 OK"
+2026-03-06 17:17:44,935 INFO [httpx] HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-06 17:17:47,388 INFO [httpx] HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-06 17:17:49,231 INFO [httpx] HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-06 17:17:50,981 INFO [httpx] HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-06 17:17:51,629 INFO [httpx] HTTP Request: POST https://fbpurnccfmrzxqsbslpc.supabase.co/rest/v1/transcriptions "HTTP/2 201 Created"
+2026-03-06 17:17:51,796 INFO [httpx] HTTP Request: GET https://fbpurnccfmrzxqsbslpc.supabase.co/rest/v1/users?select=plan&id=eq.6490036537&limit=1 "HTTP/2 200 OK"
+2026-03-06 17:17:51,915 INFO [httpx] HTTP Request: GET https://fbpurnccfmrzxqsbslpc.supabase.co/rest/v1/daily_usage?select=count&user_id=eq.6490036537&date=eq.2026-03-06&limit=1 "HTTP/2 200 OK"
+2026-03-06 17:17:52,032 INFO [httpx] HTTP Request: POST https://fbpurnccfmrzxqsbslpc.supabase.co/rest/v1/daily_usage "HTTP/2 200 OK"
+2026-03-06 17:17:52,647 INFO [aiogram.event] Update id=930176279 is handled. Duration 13897 ms by bot id=8650692689
+2026-03-06 17:19:17,578 INFO [httpx] HTTP Request: GET https://fbpurnccfmrzxqsbslpc.supabase.co/rest/v1/transcriptions?select=id%2Csource_type%2Ctranscript%2Csummary%2Ccreated_at&id=eq.c927e3a0-7fdf-433a-b89e-15537e1d3471&user_id=eq.6490036537&limit=1 "HTTP/2 200 OK"
+2026-03-06 17:19:19,857 INFO [httpx] HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-06 17:19:22,005 INFO [httpx] HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-06 17:19:23,542 INFO [httpx] HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-06 17:19:24,787 INFO [httpx] HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-06 17:19:25,204 INFO [httpx] HTTP Request: PATCH https://fbpurnccfmrzxqsbslpc.supabase.co/rest/v1/transcriptions?id=eq.c927e3a0-7fdf-433a-b89e-15537e1d3471&user_id=eq.6490036537 "HTTP/2 200 OK"
+2026-03-06 17:19:25,354 INFO [httpx] HTTP Request: GET https://fbpurnccfmrzxqsbslpc.supabase.co/rest/v1/users?select=plan&id=eq.6490036537&limit=1 "HTTP/2 200 OK"
+2026-03-06 17:19:25,497 INFO [httpx] HTTP Request: GET https://fbpurnccfmrzxqsbslpc.supabase.co/rest/v1/daily_usage?select=count&user_id=eq.6490036537&date=eq.2026-03-06&limit=1 "HTTP/2 200 OK"
+2026-03-06 17:19:26,020 INFO [aiogram.event] Update id=930176280 is handled. Duration 8977 ms by bot id=8650692689
+2026-03-06 17:19:33,563 INFO [httpx] HTTP Request: GET https://fbpurnccfmrzxqsbslpc.supabase.co/rest/v1/transcriptions?select=id%2Csource_type%2Ctranscript%2Csummary%2Ccreated_at&id=eq.c927e3a0-7fdf-433a-b89e-15537e1d3471&user_id=eq.6490036537&limit=1 "HTTP/2 200 OK"
+2026-03-06 17:19:34,275 INFO [httpx] HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2026-03-06 17:19:34,276 INFO [groq._base_client] Retrying request to /openai/v1/chat/completions in 2.000000 seconds
+2026-03-06 17:19:38,616 INFO [httpx] HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-06 17:19:38,730 INFO [httpx] HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2026-03-06 17:19:38,730 INFO [groq._base_client] Retrying request to /openai/v1/chat/completions in 19.000000 seconds
+2026-03-06 17:20:00,512 INFO [httpx] HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-06 17:20:00,650 INFO [httpx] HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2026-03-06 17:20:00,651 INFO [groq._base_client] Retrying request to /openai/v1/chat/completions in 5.000000 seconds
+2026-03-06 17:20:07,734 INFO [httpx] HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-06 17:20:07,834 INFO [httpx] HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2026-03-06 17:20:07,835 INFO [groq._base_client] Retrying request to /openai/v1/chat/completions in 9.000000 seconds
+2026-03-06 17:20:19,222 INFO [httpx] HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-06 17:20:19,638 INFO [httpx] HTTP Request: PATCH https://fbpurnccfmrzxqsbslpc.supabase.co/rest/v1/transcriptions?id=eq.c927e3a0-7fdf-433a-b89e-15537e1d3471&user_id=eq.6490036537 "HTTP/2 200 OK"
+2026-03-06 17:20:19,782 INFO [httpx] HTTP Request: GET https://fbpurnccfmrzxqsbslpc.supabase.co/rest/v1/users?select=plan&id=eq.6490036537&limit=1 "HTTP/2 200 OK"
+2026-03-06 17:20:19,916 INFO [httpx] HTTP Request: GET https://fbpurnccfmrzxqsbslpc.supabase.co/rest/v1/daily_usage?select=count&user_id=eq.6490036537&date=eq.2026-03-06&limit=1 "HTTP/2 200 OK"
+2026-03-06 17:20:20,599 INFO [aiogram.event] Update id=930176281 is handled. Duration 47422 ms by bot id=8650692689
+2026-03-06 17:31:19,066 ERROR [aiogram.dispatcher] Failed to fetch updates - TelegramNetworkError: HTTP Client says - Request timeout error
+2026-03-06 17:31:19,068 WARNING [aiogram.dispatcher] Sleep for 1.000000 seconds and try again... (tryings = 0, bot id = 8650692689)
+2026-03-06 17:31:30,687 INFO [aiogram.dispatcher] Connection established (tryings = 1, bot id = 8650692689)
+2026-03-06 17:36:39,431 INFO [httpx] HTTP Request: GET https://fbpurnccfmrzxqsbslpc.supabase.co/rest/v1/users?select=%2A&id=eq.6490036537&limit=1 "HTTP/2 200 OK"
+2026-03-06 17:36:39,561 INFO [httpx] HTTP Request: GET https://fbpurnccfmrzxqsbslpc.supabase.co/rest/v1/users?select=plan&id=eq.6490036537&limit=1 "HTTP/2 200 OK"
+2026-03-06 17:36:39,689 INFO [httpx] HTTP Request: GET https://fbpurnccfmrzxqsbslpc.supabase.co/rest/v1/daily_usage?select=count&user_id=eq.6490036537&date=eq.2026-03-06&limit=1 "HTTP/2 200 OK"
+2026-03-06 17:36:39,867 INFO [httpx] HTTP Request: GET https://fbpurnccfmrzxqsbslpc.supabase.co/rest/v1/transcriptions?select=id%2Csource_type%2Ctranscript%2Csummary%2Ccreated_at&user_id=eq.6490036537&order=created_at.desc&limit=5 "HTTP/2 200 OK"
+2026-03-06 17:36:40,532 INFO [aiogram.event] Update id=930176282 is handled. Duration 2171 ms by bot id=8650692689
+2026-03-06 17:36:46,861 INFO [aiogram.event] Update id=930176283 is handled. Duration 121 ms by bot id=8650692689
+2026-03-06 17:51:16,981 ERROR [aiogram.dispatcher] Failed to fetch updates - TelegramNetworkError: HTTP Client says - ServerDisconnectedError: Server disconnected
+2026-03-06 17:51:16,984 WARNING [aiogram.dispatcher] Sleep for 1.000000 seconds and try again... (tryings = 0, bot id = 8650692689)
+2026-03-06 17:51:28,526 INFO [aiogram.dispatcher] Connection established (tryings = 1, bot id = 8650692689)
+2026-03-06 18:14:51,559 WARNING [aiogram.dispatcher] Received SIGINT signal
+2026-03-06 18:14:51,560 INFO [aiogram.dispatcher] Polling stopped for bot @TheBriefSummaryBot id=8650692689 - 'BriefBot'
+2026-03-06 18:14:51,560 INFO [aiogram.dispatcher] Polling stopped
+2026-03-06 18:14:51,761 WARNING [aiogram.dispatcher] Received SIGINT signal
+2026-03-06 18:16:48,171 INFO [aiogram.dispatcher] Start polling
+2026-03-06 18:16:48,265 INFO [aiogram.dispatcher] Run polling for bot @TheBriefSummaryBot id=8650692689 - 'BriefBot'
+2026-03-06 18:16:49,627 INFO [httpx] HTTP Request: GET https://fbpurnccfmrzxqsbslpc.supabase.co/rest/v1/users?select=%2A&id=eq.6490036537&limit=1 "HTTP/2 200 OK"
+2026-03-06 18:16:50,074 INFO [aiogram.event] Update id=930176284 is handled. Duration 1709 ms by bot id=8650692689
+2026-03-06 18:17:17,383 INFO [httpx] HTTP Request: GET https://fbpurnccfmrzxqsbslpc.supabase.co/rest/v1/users?select=%2A&id=eq.6490036537&limit=1 "HTTP/2 200 OK"
+2026-03-06 18:17:17,580 INFO [httpx] HTTP Request: GET https://fbpurnccfmrzxqsbslpc.supabase.co/rest/v1/users?select=plan&id=eq.6490036537&limit=1 "HTTP/2 200 OK"
+2026-03-06 18:17:17,727 INFO [httpx] HTTP Request: GET https://fbpurnccfmrzxqsbslpc.supabase.co/rest/v1/daily_usage?select=count&user_id=eq.6490036537&date=eq.2026-03-06&limit=1 "HTTP/2 200 OK"
+2026-03-06 18:17:17,944 INFO [httpx] HTTP Request: GET https://fbpurnccfmrzxqsbslpc.supabase.co/rest/v1/transcriptions?select=id%2Csource_type%2Ctranscript%2Csummary%2Ccreated_at&user_id=eq.6490036537&order=created_at.desc&limit=5 "HTTP/2 200 OK"
+2026-03-06 18:17:18,280 INFO [aiogram.event] Update id=930176285 is handled. Duration 1404 ms by bot id=8650692689
+2026-03-06 18:17:28,102 INFO [aiogram.event] Update id=930176286 is handled. Duration 262 ms by bot id=8650692689
+2026-03-06 18:18:17,307 INFO [aiogram.event] Update id=930176287 is handled. Duration 132 ms by bot id=8650692689
+2026-03-06 18:18:49,524 INFO [httpx] HTTP Request: GET https://fbpurnccfmrzxqsbslpc.supabase.co/rest/v1/users?select=%2A&id=eq.6490036537&limit=1 "HTTP/2 200 OK"
+2026-03-06 18:18:49,658 INFO [httpx] HTTP Request: GET https://fbpurnccfmrzxqsbslpc.supabase.co/rest/v1/users?select=plan&id=eq.6490036537&limit=1 "HTTP/2 200 OK"
+2026-03-06 18:18:49,843 INFO [httpx] HTTP Request: GET https://fbpurnccfmrzxqsbslpc.supabase.co/rest/v1/daily_usage?select=count&user_id=eq.6490036537&date=eq.2026-03-06&limit=1 "HTTP/2 200 OK"
+2026-03-06 18:18:50,525 INFO [httpx] HTTP Request: GET https://www.google.com/search?q=star+wars+revenge+of+the+sith+watch+in+english&newwindow=1&sca_esv=ff24eace6b27a26e&sxsrf=ANbL-n44_bhGvLDq_EhiMGgGdgV5y-a1ZQ%3A1772546887498&ei=R-umafWLHpaNi-gPosLX8Qc&biw=1450&bih=846&ved=0ahUKEwi1y87c84OTAxWWxgIHHSLhNX4Q4dUDCBE&uact=5&oq=star+wars+revenge+of+the+sith+watch+in+english&gs_lp=Egxnd3Mtd2l6LXNlcnAiLnN0YXIgd2FycyByZXZlbmdlIG9mIHRoZSBzaXRoIHdhdGNoIGluIGVuZ2xpc2hIsB1QiARY0RtwAXgBkAEAmAH0AaAB1xaqAQYwLjE0LjO4AQPIAQD4AQGYAgugAvANwgIKEAAYsAMY1gQYR8ICDRAAGIAEGLADGEMYigXCAg4QABiwAxjkAhjWBNgBAcICExAuGIAEGLADGEMYyAMYigXYAQHCAgoQABiABBgUGIcCwgIKEC4YgAQYFBiHAsICCBAAGIAEGMsBwgIIEC4YgAQYywHCAgYQABgWGB7CAggQABgWGAoYHsICBRAAGIAEwgIFECEYnwWYAwCIBgGQBhO6BgYIARABGAmSBwUxLjguMqAH81eyBwUwLjguMrgH4w3CBwcwLjIuOC4xyAcxgAgA&sclient=gws-wiz-serp "HTTP/1.1 200 OK"
+2026-03-06 18:18:52,330 INFO [groq._base_client] Retrying request to /openai/v1/chat/completions in 0.462042 seconds
+2026-03-06 18:18:55,184 INFO [httpx] HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-06 18:18:55,666 INFO [httpx] HTTP Request: POST https://fbpurnccfmrzxqsbslpc.supabase.co/rest/v1/transcriptions "HTTP/2 201 Created"
+2026-03-06 18:18:55,799 INFO [httpx] HTTP Request: GET https://fbpurnccfmrzxqsbslpc.supabase.co/rest/v1/users?select=plan&id=eq.6490036537&limit=1 "HTTP/2 200 OK"
+2026-03-06 18:18:55,942 INFO [httpx] HTTP Request: GET https://fbpurnccfmrzxqsbslpc.supabase.co/rest/v1/daily_usage?select=count&user_id=eq.6490036537&date=eq.2026-03-06&limit=1 "HTTP/2 200 OK"
+2026-03-06 18:18:56,100 INFO [httpx] HTTP Request: POST https://fbpurnccfmrzxqsbslpc.supabase.co/rest/v1/daily_usage "HTTP/2 200 OK"
+2026-03-06 18:18:56,780 INFO [aiogram.event] Update id=930176288 is handled. Duration 7932 ms by bot id=8650692689
+2026-03-06 18:20:12,147 INFO [aiogram.event] Update id=930176289 is handled. Duration 1733 ms by bot id=8650692689
+2026-03-06 18:20:25,128 INFO [httpx] HTTP Request: GET https://fbpurnccfmrzxqsbslpc.supabase.co/rest/v1/users?select=%2A&id=eq.6490036537&limit=1 "HTTP/2 200 OK"
+2026-03-06 18:20:25,252 INFO [httpx] HTTP Request: GET https://fbpurnccfmrzxqsbslpc.supabase.co/rest/v1/users?select=plan&id=eq.6490036537&limit=1 "HTTP/2 200 OK"
+2026-03-06 18:20:25,393 INFO [httpx] HTTP Request: GET https://fbpurnccfmrzxqsbslpc.supabase.co/rest/v1/daily_usage?select=count&user_id=eq.6490036537&date=eq.2026-03-06&limit=1 "HTTP/2 200 OK"
+2026-03-06 18:20:28,446 ERROR [bot.handlers.content] Processing failed: ⚠️ Не удалось получить субтитры YouTube сейчас. Попробуй ещё раз через минуту.
+Traceback (most recent call last):
+  File "/Users/danilavaganov/Documents/freelance_projects/BriefBot/bot/services/youtube.py", line 62, in fetch_youtube_transcript
+    transcript_list = await asyncio.to_thread(api.list, video_id)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/danilavaganov/.local/share/uv/python/cpython-3.14.3-macos-aarch64-none/lib/python3.14/asyncio/threads.py", line 25, in to_thread
+    return await loop.run_in_executor(None, func_call)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/danilavaganov/.local/share/uv/python/cpython-3.14.3-macos-aarch64-none/lib/python3.14/concurrent/futures/thread.py", line 86, in run
+    result = ctx.run(self.task)
+  File "/Users/danilavaganov/.local/share/uv/python/cpython-3.14.3-macos-aarch64-none/lib/python3.14/concurrent/futures/thread.py", line 73, in run
+    return fn(*args, **kwargs)
+  File "/Users/danilavaganov/Documents/freelance_projects/BriefBot/.venv/lib/python3.14/site-packages/youtube_transcript_api/_api.py", line 127, in list
+    return self._fetcher.fetch(video_id)
+           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^
+  File "/Users/danilavaganov/Documents/freelance_projects/BriefBot/.venv/lib/python3.14/site-packages/youtube_transcript_api/_transcripts.py", line 356, in fetch
+    self._fetch_captions_json(video_id),
+    ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^
+  File "/Users/danilavaganov/Documents/freelance_projects/BriefBot/.venv/lib/python3.14/site-packages/youtube_transcript_api/_transcripts.py", line 373, in _fetch_captions_json
+    raise exception.with_proxy_config(self._proxy_config)
+  File "/Users/danilavaganov/Documents/freelance_projects/BriefBot/.venv/lib/python3.14/site-packages/youtube_transcript_api/_transcripts.py", line 364, in _fetch_captions_json
+    return self._extract_captions_json(innertube_data, video_id)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/danilavaganov/Documents/freelance_projects/BriefBot/.venv/lib/python3.14/site-packages/youtube_transcript_api/_transcripts.py", line 385, in _extract_captions_json
+    self._assert_playability(innertube_data.get("playabilityStatus"), video_id)
+    ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/danilavaganov/Documents/freelance_projects/BriefBot/.venv/lib/python3.14/site-packages/youtube_transcript_api/_transcripts.py", line 404, in _assert_playability
+    raise RequestBlocked(video_id)
+youtube_transcript_api._errors.RequestBlocked: 
+Could not retrieve a transcript for the video https://www.youtube.com/watch?v=oDE_TzUvECo! This is most likely caused by:
+
+YouTube is blocking requests from your IP. This usually is due to one of the following reasons:
+- You have done too many requests and your IP has been blocked by YouTube
+- You are doing requests from an IP belonging to a cloud provider (like AWS, Google Cloud Platform, Azure, etc.). Unfortunately, most IPs from cloud providers are blocked by YouTube.
+
+There are two things you can do to work around this:
+1. Use proxies to hide your IP address, as explained in the "Working around IP bans" section of the README (https://github.com/jdepoix/youtube-transcript-api?tab=readme-ov-file#working-around-ip-bans-requestblocked-or-ipblocked-exception).
+2. (NOT RECOMMENDED) If you authenticate your requests using cookies, you will be able to continue doing requests for a while. However, YouTube will eventually permanently ban the account that you have used to authenticate with! So only do this if you don't mind your account being banned!
+
+If you are sure that the described cause is not responsible for this error and that a transcript should be retrievable, please create an issue at https://github.com/jdepoix/youtube-transcript-api/issues. Please add which version of youtube_transcript_api you are using and provide the information needed to replicate the error. Also make sure that there are no open issues which already describe your problem!
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/danilavaganov/Documents/freelance_projects/BriefBot/bot/handlers/content.py", line 417, in handle_links
+    processed = await transcriber.process_url(url)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/danilavaganov/Documents/freelance_projects/BriefBot/bot/services/transcribe.py", line 112, in process_url
+    return await self.process_youtube(url)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/danilavaganov/Documents/freelance_projects/BriefBot/bot/services/transcribe.py", line 132, in process_youtube
+    transcript = await fetch_youtube_transcript(url)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/danilavaganov/Documents/freelance_projects/BriefBot/bot/services/youtube.py", line 103, in fetch_youtube_transcript
+    raise YouTubeProcessingError(
+        "⚠️ Не удалось получить субтитры YouTube сейчас. Попробуй ещё раз через минуту."
+    ) from exc
+bot.services.youtube.YouTubeProcessingError: ⚠️ Не удалось получить субтитры YouTube сейчас. Попробуй ещё раз через минуту.
+2026-03-06 18:20:28,677 INFO [aiogram.event] Update id=930176290 is handled. Duration 3967 ms by bot id=8650692689
+2026-03-06 18:23:52,834 WARNING [aiogram.dispatcher] Received SIGINT signal
+2026-03-06 18:23:52,835 INFO [aiogram.dispatcher] Polling stopped for bot @TheBriefSummaryBot id=8650692689 - 'BriefBot'
+2026-03-06 18:23:52,835 INFO [aiogram.dispatcher] Polling stopped
+2026-03-06 18:23:53,037 WARNING [aiogram.dispatcher] Received SIGINT signal
+2026-03-06 18:23:57,022 INFO [aiogram.dispatcher] Start polling
+2026-03-06 18:23:57,121 INFO [aiogram.dispatcher] Run polling for bot @TheBriefSummaryBot id=8650692689 - 'BriefBot'
+2026-03-06 18:24:07,415 INFO [httpx] HTTP Request: GET https://fbpurnccfmrzxqsbslpc.supabase.co/rest/v1/users?select=%2A&id=eq.6490036537&limit=1 "HTTP/2 200 OK"
+2026-03-06 18:24:07,943 INFO [aiogram.event] Update id=930176291 is handled. Duration 1504 ms by bot id=8650692689
+2026-03-06 18:24:11,135 INFO [aiogram.event] Update id=930176292 is handled. Duration 142 ms by bot id=8650692689
+2026-03-06 18:24:21,869 INFO [aiogram.event] Update id=930176293 is handled. Duration 2503 ms by bot id=8650692689
+2026-03-06 18:24:26,337 INFO [httpx] HTTP Request: GET https://fbpurnccfmrzxqsbslpc.supabase.co/rest/v1/users?select=%2A&id=eq.6490036537&limit=1 "HTTP/2 200 OK"
+2026-03-06 18:24:26,464 INFO [httpx] HTTP Request: GET https://fbpurnccfmrzxqsbslpc.supabase.co/rest/v1/users?select=plan&id=eq.6490036537&limit=1 "HTTP/2 200 OK"
+2026-03-06 18:24:26,605 INFO [httpx] HTTP Request: GET https://fbpurnccfmrzxqsbslpc.supabase.co/rest/v1/daily_usage?select=count&user_id=eq.6490036537&date=eq.2026-03-06&limit=1 "HTTP/2 200 OK"
+2026-03-06 18:24:29,273 ERROR [bot.handlers.content] Processing failed: ⚠️ YouTube заблокировал запросы с текущего IP. Добавь прокси в .env: YOUTUBE_PROXY_HTTP_URL / YOUTUBE_PROXY_HTTPS_URL, или попробуй другую сеть/VPN.
+Traceback (most recent call last):
+  File "/Users/danilavaganov/Documents/freelance_projects/BriefBot/bot/services/youtube.py", line 81, in fetch_youtube_transcript
+    transcript_list = await asyncio.to_thread(api.list, video_id)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/danilavaganov/.local/share/uv/python/cpython-3.14.3-macos-aarch64-none/lib/python3.14/asyncio/threads.py", line 25, in to_thread
+    return await loop.run_in_executor(None, func_call)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/danilavaganov/.local/share/uv/python/cpython-3.14.3-macos-aarch64-none/lib/python3.14/concurrent/futures/thread.py", line 86, in run
+    result = ctx.run(self.task)
+  File "/Users/danilavaganov/.local/share/uv/python/cpython-3.14.3-macos-aarch64-none/lib/python3.14/concurrent/futures/thread.py", line 73, in run
+    return fn(*args, **kwargs)
+  File "/Users/danilavaganov/Documents/freelance_projects/BriefBot/.venv/lib/python3.14/site-packages/youtube_transcript_api/_api.py", line 127, in list
+    return self._fetcher.fetch(video_id)
+           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^
+  File "/Users/danilavaganov/Documents/freelance_projects/BriefBot/.venv/lib/python3.14/site-packages/youtube_transcript_api/_transcripts.py", line 356, in fetch
+    self._fetch_captions_json(video_id),
+    ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^
+  File "/Users/danilavaganov/Documents/freelance_projects/BriefBot/.venv/lib/python3.14/site-packages/youtube_transcript_api/_transcripts.py", line 373, in _fetch_captions_json
+    raise exception.with_proxy_config(self._proxy_config)
+  File "/Users/danilavaganov/Documents/freelance_projects/BriefBot/.venv/lib/python3.14/site-packages/youtube_transcript_api/_transcripts.py", line 364, in _fetch_captions_json
+    return self._extract_captions_json(innertube_data, video_id)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/danilavaganov/Documents/freelance_projects/BriefBot/.venv/lib/python3.14/site-packages/youtube_transcript_api/_transcripts.py", line 385, in _extract_captions_json
+    self._assert_playability(innertube_data.get("playabilityStatus"), video_id)
+    ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/danilavaganov/Documents/freelance_projects/BriefBot/.venv/lib/python3.14/site-packages/youtube_transcript_api/_transcripts.py", line 404, in _assert_playability
+    raise RequestBlocked(video_id)
+youtube_transcript_api._errors.RequestBlocked: 
+Could not retrieve a transcript for the video https://www.youtube.com/watch?v=oDE_TzUvECo! This is most likely caused by:
+
+YouTube is blocking requests from your IP. This usually is due to one of the following reasons:
+- You have done too many requests and your IP has been blocked by YouTube
+- You are doing requests from an IP belonging to a cloud provider (like AWS, Google Cloud Platform, Azure, etc.). Unfortunately, most IPs from cloud providers are blocked by YouTube.
+
+There are two things you can do to work around this:
+1. Use proxies to hide your IP address, as explained in the "Working around IP bans" section of the README (https://github.com/jdepoix/youtube-transcript-api?tab=readme-ov-file#working-around-ip-bans-requestblocked-or-ipblocked-exception).
+2. (NOT RECOMMENDED) If you authenticate your requests using cookies, you will be able to continue doing requests for a while. However, YouTube will eventually permanently ban the account that you have used to authenticate with! So only do this if you don't mind your account being banned!
+
+If you are sure that the described cause is not responsible for this error and that a transcript should be retrievable, please create an issue at https://github.com/jdepoix/youtube-transcript-api/issues. Please add which version of youtube_transcript_api you are using and provide the information needed to replicate the error. Also make sure that there are no open issues which already describe your problem!
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/danilavaganov/Documents/freelance_projects/BriefBot/bot/handlers/content.py", line 417, in handle_links
+    processed = await transcriber.process_url(url)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/danilavaganov/Documents/freelance_projects/BriefBot/bot/services/transcribe.py", line 112, in process_url
+    return await self.process_youtube(url)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/danilavaganov/Documents/freelance_projects/BriefBot/bot/services/transcribe.py", line 132, in process_youtube
+    transcript = await fetch_youtube_transcript(url)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/danilavaganov/Documents/freelance_projects/BriefBot/bot/services/youtube.py", line 123, in fetch_youtube_transcript
+    raise YouTubeProcessingError(
+    ...<3 lines>...
+    ) from exc
+bot.services.youtube.YouTubeProcessingError: ⚠️ YouTube заблокировал запросы с текущего IP. Добавь прокси в .env: YOUTUBE_PROXY_HTTP_URL / YOUTUBE_PROXY_HTTPS_URL, или попробуй другую сеть/VPN.
+2026-03-06 18:24:29,812 INFO [aiogram.event] Update id=930176294 is handled. Duration 3892 ms by bot id=8650692689
+2026-03-06 18:25:46,086 ERROR [aiogram.dispatcher] Failed to fetch updates - TelegramNetworkError: HTTP Client says - Request timeout error
+2026-03-06 18:25:46,087 WARNING [aiogram.dispatcher] Sleep for 1.000000 seconds and try again... (tryings = 0, bot id = 8650692689)
+2026-03-06 18:25:46,780 WARNING [aiogram.dispatcher] Received SIGINT signal
+2026-03-06 18:25:46,781 INFO [aiogram.dispatcher] Polling stopped for bot @TheBriefSummaryBot id=8650692689 - 'BriefBot'
+2026-03-06 18:25:46,781 INFO [aiogram.dispatcher] Polling stopped
+2026-03-06 18:25:46,983 WARNING [aiogram.dispatcher] Received SIGINT signal
+2026-03-06 18:25:50,899 INFO [aiogram.dispatcher] Start polling
+2026-03-06 18:25:51,036 INFO [aiogram.dispatcher] Run polling for bot @TheBriefSummaryBot id=8650692689 - 'BriefBot'
+2026-03-06 18:25:51,960 INFO [httpx] HTTP Request: GET https://fbpurnccfmrzxqsbslpc.supabase.co/rest/v1/users?select=%2A&id=eq.6490036537&limit=1 "HTTP/2 200 OK"
+2026-03-06 18:25:51,961 INFO [httpx] HTTP Request: GET https://fbpurnccfmrzxqsbslpc.supabase.co/rest/v1/users?select=%2A&id=eq.6490036537&limit=1 "HTTP/2 200 OK"
+2026-03-06 18:25:52,110 INFO [httpx] HTTP Request: GET https://fbpurnccfmrzxqsbslpc.supabase.co/rest/v1/users?select=plan&id=eq.6490036537&limit=1 "HTTP/2 200 OK"
+2026-03-06 18:25:52,270 INFO [httpx] HTTP Request: GET https://fbpurnccfmrzxqsbslpc.supabase.co/rest/v1/daily_usage?select=count&user_id=eq.6490036537&date=eq.2026-03-06&limit=1 "HTTP/2 200 OK"
+2026-03-06 18:25:52,422 INFO [aiogram.event] Update id=930176296 is handled. Duration 1272 ms by bot id=8650692689
+2026-03-06 18:25:54,967 ERROR [bot.handlers.content] Processing failed: ⚠️ YouTube заблокировал запросы с текущего IP. Добавь прокси в .env: YOUTUBE_PROXY_HTTP_URL / YOUTUBE_PROXY_HTTPS_URL, или попробуй другую сеть/VPN.
+Traceback (most recent call last):
+  File "/Users/danilavaganov/Documents/freelance_projects/BriefBot/bot/services/youtube.py", line 81, in fetch_youtube_transcript
+    transcript_list = await asyncio.to_thread(api.list, video_id)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/danilavaganov/.local/share/uv/python/cpython-3.14.3-macos-aarch64-none/lib/python3.14/asyncio/threads.py", line 25, in to_thread
+    return await loop.run_in_executor(None, func_call)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/danilavaganov/.local/share/uv/python/cpython-3.14.3-macos-aarch64-none/lib/python3.14/concurrent/futures/thread.py", line 86, in run
+    result = ctx.run(self.task)
+  File "/Users/danilavaganov/.local/share/uv/python/cpython-3.14.3-macos-aarch64-none/lib/python3.14/concurrent/futures/thread.py", line 73, in run
+    return fn(*args, **kwargs)
+  File "/Users/danilavaganov/Documents/freelance_projects/BriefBot/.venv/lib/python3.14/site-packages/youtube_transcript_api/_api.py", line 127, in list
+    return self._fetcher.fetch(video_id)
+           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^
+  File "/Users/danilavaganov/Documents/freelance_projects/BriefBot/.venv/lib/python3.14/site-packages/youtube_transcript_api/_transcripts.py", line 356, in fetch
+    self._fetch_captions_json(video_id),
+    ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^
+  File "/Users/danilavaganov/Documents/freelance_projects/BriefBot/.venv/lib/python3.14/site-packages/youtube_transcript_api/_transcripts.py", line 373, in _fetch_captions_json
+    raise exception.with_proxy_config(self._proxy_config)
+  File "/Users/danilavaganov/Documents/freelance_projects/BriefBot/.venv/lib/python3.14/site-packages/youtube_transcript_api/_transcripts.py", line 364, in _fetch_captions_json
+    return self._extract_captions_json(innertube_data, video_id)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/danilavaganov/Documents/freelance_projects/BriefBot/.venv/lib/python3.14/site-packages/youtube_transcript_api/_transcripts.py", line 385, in _extract_captions_json
+    self._assert_playability(innertube_data.get("playabilityStatus"), video_id)
+    ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/danilavaganov/Documents/freelance_projects/BriefBot/.venv/lib/python3.14/site-packages/youtube_transcript_api/_transcripts.py", line 404, in _assert_playability
+    raise RequestBlocked(video_id)
+youtube_transcript_api._errors.RequestBlocked: 
+Could not retrieve a transcript for the video https://www.youtube.com/watch?v=oDE_TzUvECo! This is most likely caused by:
+
+YouTube is blocking requests from your IP. This usually is due to one of the following reasons:
+- You have done too many requests and your IP has been blocked by YouTube
+- You are doing requests from an IP belonging to a cloud provider (like AWS, Google Cloud Platform, Azure, etc.). Unfortunately, most IPs from cloud providers are blocked by YouTube.
+
+There are two things you can do to work around this:
+1. Use proxies to hide your IP address, as explained in the "Working around IP bans" section of the README (https://github.com/jdepoix/youtube-transcript-api?tab=readme-ov-file#working-around-ip-bans-requestblocked-or-ipblocked-exception).
+2. (NOT RECOMMENDED) If you authenticate your requests using cookies, you will be able to continue doing requests for a while. However, YouTube will eventually permanently ban the account that you have used to authenticate with! So only do this if you don't mind your account being banned!
+
+If you are sure that the described cause is not responsible for this error and that a transcript should be retrievable, please create an issue at https://github.com/jdepoix/youtube-transcript-api/issues. Please add which version of youtube_transcript_api you are using and provide the information needed to replicate the error. Also make sure that there are no open issues which already describe your problem!
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/danilavaganov/Documents/freelance_projects/BriefBot/bot/handlers/content.py", line 417, in handle_links
+    processed = await transcriber.process_url(url)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/danilavaganov/Documents/freelance_projects/BriefBot/bot/services/transcribe.py", line 112, in process_url
+    return await self.process_youtube(url)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/danilavaganov/Documents/freelance_projects/BriefBot/bot/services/transcribe.py", line 132, in process_youtube
+    transcript = await fetch_youtube_transcript(url)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/danilavaganov/Documents/freelance_projects/BriefBot/bot/services/youtube.py", line 123, in fetch_youtube_transcript
+    raise YouTubeProcessingError(
+    ...<3 lines>...
+    ) from exc
+bot.services.youtube.YouTubeProcessingError: ⚠️ YouTube заблокировал запросы с текущего IP. Добавь прокси в .env: YOUTUBE_PROXY_HTTP_URL / YOUTUBE_PROXY_HTTPS_URL, или попробуй другую сеть/VPN.
+2026-03-06 18:25:55,232 INFO [aiogram.event] Update id=930176295 is handled. Duration 4083 ms by bot id=8650692689
+2026-03-06 18:35:12,503 WARNING [aiogram.dispatcher] Received SIGINT signal
+2026-03-06 18:35:12,505 INFO [aiogram.dispatcher] Polling stopped for bot @TheBriefSummaryBot id=8650692689 - 'BriefBot'
+2026-03-06 18:35:12,505 INFO [aiogram.dispatcher] Polling stopped
+2026-03-06 18:35:12,705 WARNING [aiogram.dispatcher] Received SIGINT signal
+2026-03-06 18:45:46,847 INFO [aiogram.dispatcher] Start polling
+2026-03-06 18:45:46,948 INFO [aiogram.dispatcher] Run polling for bot @TheBriefSummaryBot id=8650692689 - 'BriefBot'
+2026-03-06 18:45:52,784 INFO [httpx] HTTP Request: GET https://fbpurnccfmrzxqsbslpc.supabase.co/rest/v1/users?select=%2A&id=eq.6490036537&limit=1 "HTTP/2 200 OK"
+2026-03-06 18:45:53,274 INFO [aiogram.event] Update id=930176297 is handled. Duration 1415 ms by bot id=8650692689
+2026-03-06 18:45:55,423 INFO [aiogram.event] Update id=930176298 is handled. Duration 123 ms by bot id=8650692689
+2026-03-06 18:46:20,849 INFO [httpx] HTTP Request: GET https://fbpurnccfmrzxqsbslpc.supabase.co/rest/v1/users?select=%2A&id=eq.6490036537&limit=1 "HTTP/2 200 OK"
+2026-03-06 18:46:20,971 INFO [httpx] HTTP Request: GET https://fbpurnccfmrzxqsbslpc.supabase.co/rest/v1/users?select=plan&id=eq.6490036537&limit=1 "HTTP/2 200 OK"
+2026-03-06 18:46:21,088 INFO [httpx] HTTP Request: GET https://fbpurnccfmrzxqsbslpc.supabase.co/rest/v1/daily_usage?select=count&user_id=eq.6490036537&date=eq.2026-03-06&limit=1 "HTTP/2 200 OK"
+2026-03-06 18:46:25,868 INFO [httpx] HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-06 18:46:28,640 INFO [httpx] HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-06 18:46:30,858 INFO [httpx] HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-06 18:46:33,042 INFO [httpx] HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-06 18:46:33,776 INFO [httpx] HTTP Request: POST https://fbpurnccfmrzxqsbslpc.supabase.co/rest/v1/transcriptions "HTTP/2 201 Created"
+2026-03-06 18:46:33,950 INFO [httpx] HTTP Request: GET https://fbpurnccfmrzxqsbslpc.supabase.co/rest/v1/users?select=plan&id=eq.6490036537&limit=1 "HTTP/2 200 OK"
+2026-03-06 18:46:34,089 INFO [httpx] HTTP Request: GET https://fbpurnccfmrzxqsbslpc.supabase.co/rest/v1/daily_usage?select=count&user_id=eq.6490036537&date=eq.2026-03-06&limit=1 "HTTP/2 200 OK"
+2026-03-06 18:46:34,230 INFO [httpx] HTTP Request: POST https://fbpurnccfmrzxqsbslpc.supabase.co/rest/v1/daily_usage "HTTP/2 200 OK"
+2026-03-06 18:46:34,823 INFO [aiogram.event] Update id=930176299 is handled. Duration 14365 ms by bot id=8650692689
+2026-03-06 18:47:00,513 INFO [httpx] HTTP Request: GET https://fbpurnccfmrzxqsbslpc.supabase.co/rest/v1/users?select=plan&id=eq.6490036537&limit=1 "HTTP/2 200 OK"
+2026-03-06 18:47:00,669 INFO [httpx] HTTP Request: GET https://fbpurnccfmrzxqsbslpc.supabase.co/rest/v1/daily_usage?select=count&user_id=eq.6490036537&date=eq.2026-03-06&limit=1 "HTTP/2 200 OK"
+2026-03-06 18:47:00,859 INFO [httpx] HTTP Request: GET https://fbpurnccfmrzxqsbslpc.supabase.co/rest/v1/transcriptions?select=id%2Csource_type%2Ctranscript%2Csummary%2Ccreated_at&id=eq.98f697e5-b2ad-4ca8-ac37-302b28120d2c&user_id=eq.6490036537&limit=1 "HTTP/2 200 OK"
+2026-03-06 18:47:01,181 ERROR [bot.handlers.content] Processing failed: ⚠️ Не удалось получить конспект от модели.
+Traceback (most recent call last):
+  File "/Users/danilavaganov/Documents/freelance_projects/BriefBot/bot/services/summarize.py", line 162, in summarize_text
+    partials.append(await self._summarize_once(chunk_prompt, style, provider))
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/danilavaganov/Documents/freelance_projects/BriefBot/bot/services/summarize.py", line 180, in _summarize_once
+    return await self._summarize_openai(text, style)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/danilavaganov/Documents/freelance_projects/BriefBot/bot/services/summarize.py", line 187, in _summarize_openai
+    raise SummaryServiceError("⚠️ GPT-4o недоступен: не настроен OPENAI_API_KEY или пакет openai.")
+bot.services.summarize.SummaryServiceError: ⚠️ GPT-4o недоступен: не настроен OPENAI_API_KEY или пакет openai.
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/danilavaganov/Documents/freelance_projects/BriefBot/bot/handlers/content.py", line 521, in handle_summary_actions
+    summary = await summarizer.summarize_text(record.transcript, style_key=style_key, provider=provider)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/danilavaganov/Documents/freelance_projects/BriefBot/bot/services/summarize.py", line 174, in summarize_text
+    raise SummaryServiceError("⚠️ Не удалось получить конспект от модели.") from exc
+bot.services.summarize.SummaryServiceError: ⚠️ Не удалось получить конспект от модели.
+2026-03-06 18:47:01,473 INFO [aiogram.event] Update id=930176300 is handled. Duration 1373 ms by bot id=8650692689
+2026-03-06 18:56:51,929 WARNING [aiogram.dispatcher] Received SIGINT signal
+2026-03-06 18:56:51,930 INFO [aiogram.dispatcher] Polling stopped for bot @TheBriefSummaryBot id=8650692689 - 'BriefBot'
+2026-03-06 18:56:51,930 INFO [aiogram.dispatcher] Polling stopped
+2026-03-06 18:56:52,132 WARNING [aiogram.dispatcher] Received SIGINT signal
