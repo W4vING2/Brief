@@ -3,6 +3,7 @@ from __future__ import annotations
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup, KeyboardButton, ReplyKeyboardMarkup
 
 PROFILE_BUTTON = "Личный кабинет"
+HISTORY_BUTTON = "История"
 ABOUT_BUTTON = "О нас"
 SEND_BUTTON = "Отправить материал"
 ADMIN_PANEL_BUTTON = "Admin Panel"
@@ -11,7 +12,8 @@ ADMIN_PANEL_BUTTON = "Admin Panel"
 def main_menu_keyboard(username: str | None = None) -> ReplyKeyboardMarkup:
     is_admin = bool(username and username.lstrip("@").lower() == "w9v33")
     rows = [
-        [KeyboardButton(text=PROFILE_BUTTON), KeyboardButton(text=ABOUT_BUTTON)],
+        [KeyboardButton(text=PROFILE_BUTTON), KeyboardButton(text=HISTORY_BUTTON)],
+        [KeyboardButton(text=ABOUT_BUTTON)],
         [KeyboardButton(text=SEND_BUTTON)],
     ]
     if is_admin:
@@ -36,21 +38,13 @@ def summary_actions_keyboard_for_plan(
 ) -> InlineKeyboardMarkup:
     rows = [
         [
-            InlineKeyboardButton(text="⚡ Коротко", callback_data=f"summary:groq:short:{transcription_id}"),
-            InlineKeyboardButton(text="🧠 Подробнее", callback_data=f"summary:groq:detailed:{transcription_id}"),
+            InlineKeyboardButton(text="⚡ Более кратко", callback_data=f"summary:short:{transcription_id}"),
+            InlineKeyboardButton(text="🧠 Более развернуто", callback_data=f"summary:detailed:{transcription_id}"),
         ],
         [
-            InlineKeyboardButton(text="✅ Чеклист", callback_data=f"summary:groq:checklist:{transcription_id}"),
-            InlineKeyboardButton(text="📣 Для поста", callback_data=f"summary:groq:post:{transcription_id}"),
-        ],
+            InlineKeyboardButton(text="📣 Для поста", callback_data=f"summary:post:{transcription_id}"),
+        ]
     ]
-    if include_premium_models:
-        rows.append(
-            [
-                InlineKeyboardButton(text="🤖 GPT-4o", callback_data=f"summary:gpt4o:detailed:{transcription_id}"),
-                InlineKeyboardButton(text="🧩 Claude", callback_data=f"summary:claude:detailed:{transcription_id}"),
-            ]
-        )
 
     return InlineKeyboardMarkup(inline_keyboard=rows)
 
@@ -75,5 +69,32 @@ def admin_panel_keyboard() -> InlineKeyboardMarkup:
                 InlineKeyboardButton(text="👑 Выдать Premium", callback_data="admin:grant:premium"),
             ],
             [InlineKeyboardButton(text="🆓 Выдать Free", callback_data="admin:grant:free")],
+        ]
+    )
+
+
+def model_select_keyboard() -> InlineKeyboardMarkup:
+    return InlineKeyboardMarkup(
+        inline_keyboard=[
+            [
+                InlineKeyboardButton(text="⚡ Groq", callback_data="model:set:groq"),
+                InlineKeyboardButton(text="🧩 Claude", callback_data="model:set:claude"),
+                InlineKeyboardButton(text="🤖 ChatGPT", callback_data="model:set:gpt4o"),
+            ]
+        ]
+    )
+
+
+def export_format_keyboard(export_id: str) -> InlineKeyboardMarkup:
+    return InlineKeyboardMarkup(
+        inline_keyboard=[
+            [
+                InlineKeyboardButton(text="Markdown", callback_data=f"export:md:{export_id}"),
+                InlineKeyboardButton(text="TXT", callback_data=f"export:txt:{export_id}"),
+            ],
+            [
+                InlineKeyboardButton(text="PDF", callback_data=f"export:pdf:{export_id}"),
+                InlineKeyboardButton(text="Ни в каком", callback_data=f"export:none:{export_id}"),
+            ],
         ]
     )

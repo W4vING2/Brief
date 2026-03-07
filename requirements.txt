@@ -9,3 +9,4 @@ youtube-transcript-api>=0.6.2
 pypdf>=6.0.0
 httpx>=0.28.1
 beautifulsoup4>=4.13.5
+fpdf2>=2.8.2

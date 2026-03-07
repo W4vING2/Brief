@@ -9,6 +9,7 @@ dependencies = [
     "aiohttp>=3.12.15",
     "anthropic>=0.54.0",
     "beautifulsoup4>=4.13.5",
+    "fpdf2>=2.8.2",
     "groq>=0.31.0",
     "httpx>=0.28.1",
     "openai==2.26.0",

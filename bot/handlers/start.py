@@ -9,10 +9,12 @@ from aiogram.types import CallbackQuery, Message
 from bot.keyboards import (
     ABOUT_BUTTON,
     ADMIN_PANEL_BUTTON,
+    HISTORY_BUTTON,
     PROFILE_BUTTON,
     SEND_BUTTON,
     admin_panel_keyboard,
     main_menu_keyboard,
+    model_select_keyboard,
     plans_keyboard,
 )
 from bot.services.database import (
@@ -27,6 +29,11 @@ from bot.services.database import (
 
 router = Router()
 T_BANK_CARD = "2200 7005 9320 9017"
+PROVIDER_LABELS = {
+    "groq": "Groq",
+    "claude": "Claude",
+    "gpt4o": "ChatGPT",
+}
 
 
 class AdminGrantState(StatesGroup):
@@ -65,7 +72,12 @@ async def cmd_help(message: Message) -> None:
     text = (
         "Поддерживаемые форматы:\n"
         "🆓 Free: только голосовые, кружки и аудио\n"
-        "🚀 Pro/Premium: голосовые, кружки, аудио, видео, PDF, YouTube и ссылки на статьи"
+        "🚀 Pro/Premium: голосовые, кружки, аудио, видео, PDF, YouTube и ссылки на статьи\n\n"
+        "Кнопки:\n"
+        f"• {PROFILE_BUTTON}\n"
+        f"• {HISTORY_BUTTON}\n"
+        f"• {ABOUT_BUTTON}\n"
+        f"• {SEND_BUTTON}"
     )
     await message.answer(text, reply_markup=_menu(message))
 
@@ -124,6 +136,11 @@ async def cmd_plans(message: Message) -> None:
     await message.answer("Выбери тариф для оплаты:", reply_markup=plans_keyboard())
 
 
+@router.message(Command("history"))
+async def cmd_history(message: Message, db: DatabaseService) -> None:
+    await _show_history(message, db)
+
+
 @router.callback_query(F.data.startswith("buy:"))
 async def handle_buy_plan(callback: CallbackQuery) -> None:
     if not callback.data:
@@ -156,10 +173,6 @@ async def show_profile(message: Message, db: DatabaseService) -> None:
     try:
         await db.ensure_user(message.from_user.id, message.from_user.username)
         status = await db.get_usage_status(message.from_user.id, message.from_user.username)
-        if should_save_history(status.plan):
-            recent = await db.get_recent_transcriptions(message.from_user.id, limit=5)
-        else:
-            recent = []
     except DatabaseServiceError as exc:
         await message.answer(str(exc), reply_markup=_menu(message))
         return
@@ -172,13 +185,6 @@ async def show_profile(message: Message, db: DatabaseService) -> None:
         remaining_text = f"{status.remaining}/{status.limit}"
 
     username = f"@{message.from_user.username}" if message.from_user.username else "не указан"
-    if should_save_history(status.plan):
-        history_lines = "\n".join(
-            f"• {item.source_type}: {item.created_at[:16].replace('T', ' ')} — {_shorten(item.summary)}"
-            for item in recent
-        ) or "• Пока нет сохраненных конспектов"
-    else:
-        history_lines = "• На тарифе Free история не сохраняется"
 
     limits_line = ""
     if status.plan in {"premium", "admin"}:
@@ -199,8 +205,7 @@ async def show_profile(message: Message, db: DatabaseService) -> None:
         f"• Использовано: {usage_text}\n"
         f"• Осталось: {remaining_text}"
         f"{limits_line}\n\n"
-        "🕘 Последние конспекты:\n"
-        f"{history_lines}"
+        f"🕘 История перенесена в кнопку «{HISTORY_BUTTON}»."
     )
     await message.answer(text, reply_markup=_menu(message))
 
@@ -217,7 +222,27 @@ async def show_about(message: Message) -> None:
 
 
 @router.message(F.text == SEND_BUTTON)
-async def show_send_material(message: Message) -> None:
+async def show_send_material(message: Message, db: DatabaseService, state: FSMContext) -> None:
+    selected_provider = "groq"
+    if message.from_user and is_admin_username(message.from_user.username):
+        selected_provider = "gpt4o"
+    try:
+        status = await db.get_usage_status(message.from_user.id, message.from_user.username)
+        state_data = await state.get_data()
+        selected_provider = state_data.get("selected_provider", selected_provider)
+    except Exception:
+        status = None
+
+    if status and status.plan in {"premium", "admin"}:
+        await message.answer(
+            "Сначала выбери модель для следующего конспекта:",
+            reply_markup=model_select_keyboard(),
+        )
+        await message.answer(
+            f"Текущая модель: {PROVIDER_LABELS.get(selected_provider, 'Groq')}",
+            reply_markup=_menu(message),
+        )
+
     text = (
         "Отправь материал одним сообщением:\n"
         "- голосовое\n"
@@ -228,6 +253,45 @@ async def show_send_material(message: Message) -> None:
         "- ссылку на статью"
     )
     await message.answer(text, reply_markup=_menu(message))
+
+
+@router.callback_query(F.data.startswith("model:set:"))
+async def set_summary_model(callback: CallbackQuery, state: FSMContext, db: DatabaseService) -> None:
+    if not callback.data or not callback.from_user:
+        await callback.answer()
+        return
+    provider = callback.data.rsplit(":", 1)[-1]
+    if provider not in PROVIDER_LABELS:
+        await callback.answer("Неизвестная модель", show_alert=True)
+        return
+
+    try:
+        status = await db.get_usage_status(callback.from_user.id, callback.from_user.username)
+    except DatabaseServiceError as exc:
+        if callback.message:
+            await callback.message.answer(
+                str(exc),
+                reply_markup=main_menu_keyboard(callback.from_user.username if callback.from_user else None),
+            )
+        await callback.answer()
+        return
+
+    if status.plan not in {"premium", "admin"}:
+        await callback.answer("Выбор модели доступен только на Premium/Admin", show_alert=True)
+        return
+
+    await state.update_data(selected_provider=provider)
+    if callback.message:
+        await callback.message.answer(
+            f"✅ Выбрана модель: {PROVIDER_LABELS[provider]}",
+            reply_markup=main_menu_keyboard(callback.from_user.username if callback.from_user else None),
+        )
+    await callback.answer("Модель сохранена")
+
+
+@router.message(F.text == HISTORY_BUTTON)
+async def show_history(message: Message, db: DatabaseService) -> None:
+    await _show_history(message, db)
 
 
 @router.message(F.text == ADMIN_PANEL_BUTTON)
@@ -359,3 +423,44 @@ def _shorten(text: str, limit: int = 56) -> str:
     if len(compact) <= limit:
         return compact
     return compact[: limit - 1].rstrip() + "…"
+
+
+def _history_topic(summary: str) -> str:
+    normalized = " ".join(summary.replace("#", " ").split())
+    normalized = normalized.replace("О чем материал", "").replace("О чём материал", "")
+    normalized = normalized.replace("Самое главное", "")
+    words = [word.strip(".,:;!?()[]{}\"'`").lower() for word in normalized.split()]
+    words = [word for word in words if len(word) > 2 and word not in {"это", "для", "или", "как", "что", "где", "про"}]
+    if not words:
+        return "без темы"
+    return " ".join(words[:3])
+
+
+async def _show_history(message: Message, db: DatabaseService) -> None:
+    try:
+        await db.ensure_user(message.from_user.id, message.from_user.username)
+        status = await db.get_usage_status(message.from_user.id, message.from_user.username)
+    except DatabaseServiceError as exc:
+        await message.answer(str(exc), reply_markup=_menu(message))
+        return
+
+    if not should_save_history(status.plan):
+        await message.answer("🗂 На тарифе Free история не сохраняется.", reply_markup=_menu(message))
+        return
+
+    try:
+        recent = await db.get_recent_transcriptions(message.from_user.id, limit=10)
+    except DatabaseServiceError as exc:
+        await message.answer(str(exc), reply_markup=_menu(message))
+        return
+
+    if not recent:
+        await message.answer("🕘 История пуста.", reply_markup=_menu(message))
+        return
+
+    lines = []
+    for item in recent:
+        date_part = item.created_at[:10]
+        lines.append(f"• {item.source_type}: {date_part} - {_history_topic(item.summary)}")
+    text = "🕘 История:\n" + "\n".join(lines)
+    await message.answer(text, reply_markup=_menu(message))

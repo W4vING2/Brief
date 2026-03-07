@@ -98,6 +98,7 @@ async def setup_commands() -> None:
             BotCommand(command="start", description="Запустить бота"),
             BotCommand(command="help", description="Что умеет бот"),
             BotCommand(command="stats", description="Моя статистика"),
+            BotCommand(command="history", description="История конспектов"),
             BotCommand(command="plans", description="Планы подписки"),
         ]
     )
