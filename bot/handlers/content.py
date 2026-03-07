@@ -738,7 +738,7 @@ async def handle_document(
         await _handle_processing_error(message, exc, message.from_user.username, thinking_message)
 
 
-@router.message(F.text | F.caption)
+@router.message(F.text.regexp(r"https?://\S+") | F.caption.regexp(r"https?://\S+"))
 async def handle_links(
     message: Message,
     db: DatabaseService,
