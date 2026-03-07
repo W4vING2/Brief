@@ -55,9 +55,9 @@ dp["summarizer"] = SummaryService(
 
 
 def _bot_mode() -> str:
-    mode = (os.getenv("BOT_MODE") or "polling").strip().lower()
+    mode = (os.getenv("BOT_MODE") or "auto").strip().lower()
     if mode not in {"auto", "webhook", "polling"}:
-        return "polling"
+        return "auto"
     return mode
 
 
@@ -159,21 +159,32 @@ def run_webhook(webhook_url: str, webhook_path: str) -> None:
 def main() -> None:
     mode = _bot_mode()
     webhook = _resolve_webhook_url()
+    has_port = bool(os.getenv("PORT"))
 
     if mode == "polling":
+        logger.info("Mode selected: polling (forced by BOT_MODE)")
         asyncio.run(run_polling())
         return
 
     if mode == "webhook":
         if webhook is None:
             raise RuntimeError("BOT_MODE=webhook requires WEBHOOK_URL.")
+        logger.info("Mode selected: webhook (forced by BOT_MODE)")
         run_webhook(*webhook)
         return
 
-    if webhook is None:
-        asyncio.run(run_polling())
-    else:
+    if has_port:
+        if webhook is None:
+            raise RuntimeError(
+                "Server environment detected (PORT is set), but WEBHOOK_URL is missing. "
+                "Set BOT_MODE=webhook and WEBHOOK_URL=https://<domain>/webhook"
+            )
+        logger.info("Mode selected: webhook (auto)")
         run_webhook(*webhook)
+        return
+
+    logger.info("Mode selected: polling (auto)")
+    asyncio.run(run_polling())
 
 
 if __name__ == "__main__":
